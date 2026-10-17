@@ -1,0 +1,12 @@
+{
+  "name": "Make Me a Hanzi stitch medians",
+  "glyphs": 9574,
+  "shards": 256,
+  "bytes": 7905384,
+  "source": "https://raw.githubusercontent.com/skishore/makemeahanzi/master/graphics.txt",
+  "source_sha256": "a28c478b5178e98f67f510b2d52fde08a69dc664654ef43498253b9b764d46ee",
+  "license": "Arphic Public License",
+  "modified": true,
+  "modifications": "Only centerline medians retained; coordinates normalized to 100-unit cells, y axis inverted; grouped by Unicode codepoint modulo 256.",
+  "modified_date": "2026-10-17"
+}

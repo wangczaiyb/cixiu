@@ -1,0 +1,5 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {transformPoint,defaultLayers,arrangeLayers,CompositionState} from '../dist/composition.js';
+test('five motifs fit as independent elements and transforms do not erase needlework',()=>{const ids=['a','b','c','d','e'];const layers=defaultLayers(ids);assert.equal(layers.length,5);assert.equal(new Set(layers.map(l=>l.id)).size,5);const p=transformPoint({x:200,y:200},layers[2]);assert.equal(p.x,layers[2].x);assert.equal(p.y,layers[2].y);const state=new CompositionState();state.add({key:'initial-2:0:0'},'#cf9290','stem');layers[2].scale=1.4;layers[2].x=100;assert.equal(state.marks.size,1);assert.ok(arrangeLayers(layers).every(l=>l.x>0&&l.x<840&&l.y>0&&l.y<510));});
+test('undo and deletion never remove another motif or text stroke',()=>{const state=new CompositionState();state.add({key:'motif:0:0'},'#cf9290','stem');state.commit();state.add({key:'text:0:0'},'#829575','stem');state.commit();state.removeLayer('motif');assert.equal(state.marks.has('text:0:0'),true);state.undo();assert.equal(state.marks.size,0);});

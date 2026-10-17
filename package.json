@@ -5,6 +5,6 @@
   "type": "module",
   "scripts": {
     "start": "node server.mjs",
-    "check": "node --check dist/app.js && node --check dist/engine.js && node --test tests/*.test.mjs"
+    "check": "node --check dist/editor-app.js && node --check dist/renderer.js && node --check dist/composition.js && node --test tests/*.test.mjs"
   }
 }
