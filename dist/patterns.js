@@ -1,3 +1,4 @@
+import { ipPatterns } from './ip-patterns.js';
 const brown = '#a27a51', cream = '#c4a073', ink = '#6c5745', pink = '#cf9290', green = '#829575', gold = '#d7af59';
 const p = (d, color = brown) => ({ d, color });
 export const patterns = [
@@ -61,6 +62,7 @@ export const patterns = [
     p('M285 264 L291 251 L296 264 L310 270 L296 275 L291 288 L285 275 L272 270 Z M111 114 L116 102 M302 104 L307 92 M211 303 L217 294', gold)
   ] }
 ];
+patterns.push(...ipPatterns);
 export const palette = [
   { color: '#a27a51', name: '奶茶棕' }, { color: '#d7af59', name: '蜂蜜金' },
   { color: '#cf9290', name: '蜜桃粉' }, { color: '#829575', name: '鼠尾草' },

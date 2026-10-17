@@ -1,5 +1,6 @@
 import { StitchState, nearbySamples, splitSubpaths } from './engine.js';
 import { patterns, palette, fabrics } from './patterns.js';
+import { MachineAudio } from './machine-audio.js';
 
 const $ = id => document.getElementById(id);
 const canvas = $('embroidery');
@@ -14,14 +15,18 @@ let savedWork = readStorage(STORAGE_KEY, {});
 let gallery = readStorage(GALLERY_KEY, []);
 if (!Array.isArray(gallery)) gallery = [];
 gallery = gallery.filter(a => a && typeof a.image === 'string' && a.image.startsWith('data:image/png;') && patterns.some(p => p.id === a.patternId) && typeof a.date === 'string').slice(-12);
-let current = patterns.find(p => p.id === settings.pattern) || patterns[0];
+let current = patterns.find(p => p.id === settings.pattern) || patterns.find(p => p.id === 'hello-kitty');
+let patternGroup = current.group || 'original';
 let fabric = fabrics.find(f => f.color === settings.fabric)?.color || fabrics[0].color;
 let stitchStyle = ['stem', 'cross', 'running'].includes(settings.style) ? settings.style : 'stem';
-let chosenColor = null, speed = 1, zoom = 1, showGuides = true, sound = false;
+let chosenColor = null, speed = 1, zoom = 1, showGuides = true;
+let sound = settings.sound !== false, machineMode = settings.machine !== false;
+let volume = typeof settings.volume === 'number' ? Math.max(0, Math.min(1, settings.volume)) : .45;
+const audio = new MachineAudio({ volume, enabled: sound, machine: machineMode });
 let samples = [], pathInfo = [], state;
 let running = false, drawing = false, previousSample = null, pointer = null;
 let activeStitch = null, nextIndex = 0, lastTime = 0, carry = 0, renderNeeded = true;
-let saveTimer, toastTimer, audioCtx, lastSound = 0, completedShown = false;
+let saveTimer, toastTimer, completedShown = false;
 let workDirty = false;
 let exportImage = '', exportPatternId = '', exportPercent = 0, exportDate = null;
 let storageWarningShown = false;
@@ -44,7 +49,7 @@ function toast(message) {
   toastTimer = setTimeout(() => $('toast').classList.remove('show'), 2800);
 }
 function saveSettings() {
-  storeStorage(SETTINGS_KEY, { pattern: current.id, fabric, style: stitchStyle });
+  storeStorage(SETTINGS_KEY, { pattern: current.id, fabric, style: stitchStyle, machine: machineMode, sound, volume });
 }
 function saveNow() {
   clearTimeout(saveTimer);
@@ -64,7 +69,8 @@ function thumbnail(pattern) {
   return `<svg viewBox="40 40 320 300" aria-hidden="true">${pattern.paths.map(p => `<path d="${p.d}" fill="none" stroke="${p.color}" stroke-width="4.3" stroke-linecap="round" stroke-linejoin="round"/>`).join('')}</svg>`;
 }
 function buildControls() {
-  $('pattern-grid').innerHTML = patterns.map(p => `<button class="pattern-card${p.id === current.id ? ' active' : ''}" data-pattern="${p.id}" aria-pressed="${p.id === current.id}" aria-label="选择${p.name}">${thumbnail(p)}<span>${p.name}</span>${p.id === current.id ? '<b class="card-check" aria-hidden="true">✓</b>' : ''}</button>`).join('');
+  $('pattern-grid').innerHTML = patterns.filter(p => (p.group || 'original') === patternGroup).map(p => `<button class="pattern-card${p.id === current.id ? ' active' : ''}" data-pattern="${p.id}" aria-pressed="${p.id === current.id}" aria-label="选择${p.name}">${thumbnail(p)}<span>${p.name}</span>${p.id === current.id ? '<b class="card-check" aria-hidden="true">✓</b>' : ''}</button>`).join('');
+  document.querySelectorAll('[data-group]').forEach(button => { const active = button.dataset.group === patternGroup; button.classList.toggle('active', active); button.setAttribute('aria-pressed', active); });
   $('thread-palette').innerHTML = palette.map(p => `<button class="spool-button" style="--thread-color:${p.color}" data-color="${p.color}" aria-label="使用${p.name}绣线" title="${p.name}" aria-pressed="false"><span class="spool" aria-hidden="true"></span></button>`).join('');
   $('fabric-palette').innerHTML = fabrics.map(f => `<button class="fabric-swatch${fabric === f.color ? ' active' : ''}" data-fabric="${f.color}" style="background:${f.color}" aria-label="使用${f.name}绣布" title="${f.name}" aria-pressed="${fabric === f.color}"></button>`).join('');
   updateStyleButtons();
@@ -91,6 +97,7 @@ function selectPattern(id, initial = false) {
   if (!initial && id === current.id) return;
   if (!initial) { pause(); endDrawing(); saveNow(); }
   current = patterns.find(p => p.id === id) || patterns[0];
+  patternGroup = current.group || 'original';
   samplePattern();
   savedWork = readStorage(STORAGE_KEY, {});
   state = new StitchState(samples.length, savedWork[current.id]);
@@ -250,6 +257,23 @@ function drawNeedle(c, timestamp) {
   const progress = Math.min(1, age / (running ? 110 / Math.sqrt(speed) : 180));
   const color = activeStitch.color;
   c.save(); c.lineCap = 'round';
+  if (machineMode) {
+    const phase = timestamp / (85 / Math.sqrt(speed));
+    const lift = running || drawing ? (Math.sin(phase) + 1) * 4.5 : 6;
+    const x = s.x2, y = s.y2;
+    c.fillStyle = '#74674b22'; c.beginPath(); c.ellipse(x + 2, y + 3, 9, 4, 0, 0, Math.PI * 2); c.fill();
+    const metal = c.createLinearGradient(x - 6, 0, x + 6, 0);
+    metal.addColorStop(0, '#868d87'); metal.addColorStop(.35, '#f4f4e9'); metal.addColorStop(.65, '#c7ccc3'); metal.addColorStop(1, '#828a81');
+    c.strokeStyle = '#7c8984'; c.lineWidth = 1.5;
+    c.beginPath(); c.moveTo(x - 7, y - 3); c.lineTo(x - 7, y + 4); c.quadraticCurveTo(x, y + 8, x + 7, y + 4); c.lineTo(x + 7, y - 3); c.stroke();
+    c.fillStyle = metal; roundedRect(c, x - 4, y - 40 - lift, 8, 16, 2); c.fill();
+    c.strokeStyle = metal; c.lineWidth = 2; c.beginPath(); c.moveTo(x, y - 25 - lift); c.lineTo(x, y - lift + 3); c.stroke();
+    c.strokeStyle = color; c.lineWidth = .8;
+    c.beginPath(); c.moveTo(x + 16, y - 53); c.bezierCurveTo(x - 3, y - 54, x + 8, y - 20, x, y - lift + 1); c.stroke();
+    c.strokeStyle = '#f6faf3b3'; c.lineWidth = .6; c.beginPath(); c.moveTo(x - 2, y - 37 - lift); c.lineTo(x - 2, y - 28 - lift); c.stroke();
+    if (running || drawing) { c.strokeStyle = color + '55'; c.lineWidth = .7; c.beginPath(); c.ellipse(x, y + 1, 7 + lift * .4, 3 + lift * .12, 0, 0, Math.PI * 2); c.stroke(); }
+    c.restore(); return;
+  }
   // Loose thread pulls through the new stitch and settles onto the linen.
   const slack = (1 - progress) * 38 + 7;
   c.strokeStyle = color; c.lineWidth = 1.1;
@@ -296,18 +320,12 @@ function addStitch(sample, timestamp) {
   return false;
 }
 function needleSound() {
-  if (!sound || performance.now() - lastSound < 70) return;
-  try {
-    audioCtx ||= new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
-    osc.type = 'sine'; osc.frequency.setValueAtTime(650 + Math.random() * 100, audioCtx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(260, audioCtx.currentTime + .045);
-    gain.gain.setValueAtTime(.018, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(.0001, audioCtx.currentTime + .055);
-    osc.connect(gain).connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime + .06);
-    lastSound = performance.now();
-  } catch { sound = false; updateSoundButton(); }
+  try { audio.stitch(); } catch { sound = false; audio.setEnabled(false); updateSoundButton(); }
+}
+function syncMachine() {
+  const active = running || drawing;
+  $('canvas-stage').classList.toggle('stitching', active && machineMode);
+  audio.setActive(active);
 }
 function checkCompletion() {
   if (!state.complete || completedShown) return;
@@ -336,13 +354,13 @@ function frame(timestamp) {
 }
 function pause() {
   if (!running) return;
-  running = false; carry = 0; state.commit(); updateProgress(); saveNow(); renderNeeded = true;
+  running = false; carry = 0; state.commit(); syncMachine(); updateProgress(); saveNow(); renderNeeded = true;
 }
 function toggleAuto() {
   if (running) { pause(); return; }
   if (state.complete) return;
   endDrawing(); pointer = null; nextIndex = 0; carry = 0; lastTime = performance.now();
-  running = true; updateProgress();
+  audio.unlock(); running = true; syncMachine(); updateProgress();
 }
 function pointFromEvent(event) {
   const rect = canvas.getBoundingClientRect();
@@ -363,12 +381,13 @@ function sewAt(point) {
 }
 function endDrawing() {
   if (!drawing) return;
-  drawing = false; previousSample = null; state.commit(); saveNow(); renderNeeded = true;
+  drawing = false; previousSample = null; state.commit(); syncMachine(); saveNow(); renderNeeded = true;
 }
 canvas.addEventListener('pointerdown', event => {
   if (event.button !== 0 || state.complete) return;
   const point = pointFromEvent(event); if (!point) return;
   pause(); drawing = true; previousSample = null; pointer = point;
+  audio.unlock(); syncMachine();
   canvas.setPointerCapture(event.pointerId); sewAt(point);
 });
 canvas.addEventListener('pointermove', event => {
@@ -383,10 +402,15 @@ canvas.addEventListener('keydown', event => { if (event.key === ' ' || event.key
 $('auto-stitch').addEventListener('click', toggleAuto);
 document.querySelectorAll('[data-speed]').forEach(button => button.addEventListener('click', () => {
   speed = Number(button.dataset.speed);
+  audio.setSpeed(speed);
   document.querySelectorAll('[data-speed]').forEach(b => { b.classList.toggle('active', b === button); b.setAttribute('aria-pressed', b === button); });
 }));
 $('pattern-grid').addEventListener('click', event => {
   const button = event.target.closest('[data-pattern]'); if (button) selectPattern(button.dataset.pattern);
+});
+$('pattern-groups').addEventListener('click', event => {
+  const button = event.target.closest('[data-group]');
+  if (button && button.dataset.group !== patternGroup) selectPattern(patterns.find(p => (p.group || 'original') === button.dataset.group).id);
 });
 $('thread-palette').addEventListener('click', event => {
   const button = event.target.closest('[data-color]');
@@ -434,11 +458,25 @@ $('confirm-reset').addEventListener('click', () => {
   workDirty = true; updateProgress(); saveNow(); renderNeeded = true; $('reset-dialog').close(); toast('新的一块绣布，慢慢来就好');
 });
 function updateSoundButton() {
-  $('sound').innerHTML = icon(sound ? 'sound' : 'mute');
+  $('sound').innerHTML = icon(sound && volume > 0 ? 'sound' : 'mute');
   $('sound').setAttribute('aria-pressed', sound);
   $('sound').setAttribute('aria-label', sound ? '关闭针线音效' : '打开针线音效');
 }
-$('sound').addEventListener('click', () => { sound = !sound; updateSoundButton(); if (sound) { needleSound(); toast('针线音效已打开'); } });
+$('sound').addEventListener('click', () => { sound = !sound; audio.unlock(); audio.setEnabled(sound); updateSoundButton(); saveSettings(); if (sound) { needleSound(); toast('针线音效已打开'); } });
+function updateMachineControls() {
+  $('machine-mode').classList.toggle('active', machineMode);
+  $('machine-mode').setAttribute('aria-pressed', machineMode);
+  $('machine-description').textContent = machineMode ? '针头起落 · 压脚轻震 · 嗒嗒作响' : '手绣模式 · 轻轻穿针，慢慢引线';
+  $('volume').value = Math.round(volume * 100);
+  $('volume-value').textContent = Math.round(volume * 100) + '%';
+}
+$('machine-mode').addEventListener('click', () => { machineMode = !machineMode; audio.unlock(); audio.setMachine(machineMode); syncMachine(); updateMachineControls(); saveSettings(); renderNeeded = true; });
+$('volume').addEventListener('input', event => {
+  volume = Number(event.target.value) / 100;
+  if (volume > 0 && !sound) { sound = true; audio.setEnabled(true); }
+  audio.unlock(); audio.setVolume(volume); updateSoundButton(); updateMachineControls(); saveSettings();
+});
+$('volume').addEventListener('change', () => { if (!running) needleSound(); });
 
 function artImage(width = 1080) {
   const priorZoom = zoom; zoom = 1; render(performance.now(), true);
@@ -521,4 +559,5 @@ for (const dialog of document.querySelectorAll('dialog')) {
 document.addEventListener('visibilitychange', () => { if (document.hidden) { pause(); endDrawing(); saveNow(); } });
 window.addEventListener('pagehide', saveNow);
 selectPattern(current.id, true);
+updateSoundButton(); updateMachineControls();
 requestAnimationFrame(frame);
