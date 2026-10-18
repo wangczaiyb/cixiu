@@ -62,12 +62,27 @@ export const patterns = [
     p('M270 130 L280 153 L306 156 L286 174 L290 200 L268 186 L245 198 L250 172 L231 153 L258 151 Z', cream),
     p('M99 264 C87 247 70 255 72 267 C52 267 56 291 74 290 L145 290 C165 284 153 265 139 269 C132 247 109 246 99 264 Z', pink),
     p('M285 264 L291 251 L296 264 L310 270 L296 275 L291 288 L285 275 L272 270 Z M111 114 L116 102 M302 104 L307 92 M211 303 L217 294', gold)
+  ] },
+  { id: 'cute-red-cat', name: '小红猫', category: '画中萌物', description: '乖乖坐在一角的小红猫。', difficulty: '入门', minutes: '约 1 分钟', paths: [
+    p('M185 185 L176 150 L195 165 L215 150 L206 185 C215 195 208 212 195 212 C182 212 176 195 185 185 Z', '#dc5262'),
+    p('M180 212 C170 232 165 255 160 270 L218 270 C226 265 230 248 224 235 C218 222 208 212 195 212', '#dc5262'),
+    p('M218 270 C234 265 240 242 232 225', '#dc5262')
+  ] },
+  { id: 'green-persimmon', name: '小青柿', category: '画中萌物', description: '挂在枝头的幸运小柿子。', difficulty: '入门', minutes: '约 1 分钟', paths: [
+    p('M200 230 C165 230 155 255 155 275 C155 305 180 318 200 318 C220 318 245 305 245 275 C245 255 235 230 200 230 Z', '#3b8f52'),
+    p('M200 218 L205 228 L216 225 L208 232 L214 242 L200 236 L186 242 L192 232 L184 225 L195 228 Z', '#3b8f52'),
+    p('M200 218 Q204 208 210 204', '#3b8f52')
   ] }
 ];
 patterns.push(...ipPatterns,...domesticPatterns,...trendingPatterns);
 export const palette = [
-  { color: '#a27a51', name: '奶茶棕' }, { color: '#d7af59', name: '蜂蜜金' },
-  { color: '#cf9290', name: '蜜桃粉' }, { color: '#829575', name: '鼠尾草' },
-  { color: '#8a9cba', name: '雾霾蓝' }, { color: '#6c5745', name: '可可色' }
+  { color: '#3b8f52', name: '萌草绿' },
+  { color: '#3a67b3', name: '晴空蓝' },
+  { color: '#7d5ba6', name: '薰衣紫' },
+  { color: '#dc5262', name: '珊瑚红' },
+  { color: '#d48c32', name: '暖麦黄' },
+  { color: '#a27a51', name: '奶茶棕' },
+  { color: '#cf9290', name: '蜜桃粉' },
+  { color: '#6c5745', name: '可可色' }
 ];
-export const fabrics = [ { color: '#f6efda', name: '原色亚麻' }, { color: '#e6eadb', name: '浅浅的绿' }, { color: '#f5e5df', name: '软桃粉' } ];
+export const fabrics = [ { color: '#fcfaf5', name: '信笺原白' }, { color: '#f6efda', name: '原色亚麻' }, { color: '#e6eadb', name: '浅浅的绿' }, { color: '#f5e5df', name: '软桃粉' } ];

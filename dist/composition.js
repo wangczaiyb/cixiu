@@ -24,8 +24,12 @@ export class CompositionState {
   removeLayer(id){for(const key of this.marks.keys())if(key.startsWith(id+':'))this.marks.delete(key);}
 }
 export class Geometry {
-  constructor(){this.cache=new Map();this.artwork=new Map();}
-  async prepareImage(pattern){if(!pattern.image)return;const art=await loadCharacterArtwork(pattern.image,pattern.imageCrop);this.artwork.set(pattern.id,art);this.cache.delete(pattern.id);pattern.thumbnail=art.thumbnail;}
+  constructor(){this.cache=new Map();this.artwork=new Map();this.pendingImages=new Map();}
+  async prepareImage(pattern){if(!pattern.image||this.artwork.has(pattern.id))return;
+    if(this.pendingImages.has(pattern.id))return this.pendingImages.get(pattern.id);
+    const task=loadCharacterArtwork(pattern.image,pattern.imageCrop).then(art=>{this.artwork.set(pattern.id,art);this.cache.delete(pattern.id);pattern.thumbnail=art.thumbnail;}).finally(()=>this.pendingImages.delete(pattern.id));
+    this.pendingImages.set(pattern.id,task);return task;
+  }
   get(pattern){
     if(this.cache.has(pattern.id))return this.cache.get(pattern.id);
     const artwork=this.artwork.get(pattern.id);
@@ -39,7 +43,7 @@ export class Geometry {
     }
     for(const meta of pattern.paths)for(const d of meta.d.split(/(?=M)/).filter(Boolean)){
       const element=document.createElementNS('http://www.w3.org/2000/svg','path');element.setAttribute('d',d);
-      const length=element.getTotalLength(),count=Math.max(2,Math.ceil(length/(meta.handmade?2.5:3.4))),path=paths.length;
+      const length=element.getTotalLength(),count=Math.max(1,Math.ceil(length/(meta.fineThread?6.5:(meta.handmade?2.5:3.4)))),path=paths.length;
       paths.push({...meta,path:new Path2D(d)});
       for(let i=0;i<count;i++){const a=element.getPointAtLength(i/count*length),b=element.getPointAtLength((i+1)/count*length);samples.push({...meta,path,n:i,x1:a.x,y1:a.y,x2:b.x,y2:b.y,x:(a.x+b.x)/2,y:(a.y+b.y)/2});}
     }

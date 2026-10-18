@@ -1,4 +1,5 @@
 import { getLatinGlyph } from './latin-strokes.js';
+import { getEmbroideryGlyph } from './embroidery-hanzi.js';
 
 const shards = new Map();
 const clamp = (value, lo, hi, fallback) => Number.isFinite(Number(value)) ? Math.max(lo, Math.min(hi, Number(value))) : fallback;
@@ -7,7 +8,7 @@ export function normalizeText(value, options = {}) {
   const maxGlyphs = clamp(options.maxGlyphs, 1, 500, 120);
   if (!text.trim()) throw new Error('先写下想绣的文字吧。');
   if ([...text.replace(/\n/g, '')].length > maxGlyphs) throw new Error(`文字最多 ${maxGlyphs} 个字，请分成几幅作品来绣。`);
-  if (text.split('\n').length > 12) throw new Error('最多可以排 12 行，请减少一些换行。');
+  if (!options.documentMode && text.split('\n').length > 12) throw new Error('最多可以排 12 行，请减少一些换行。');
   return text;
 }
 
@@ -71,6 +72,93 @@ export function layoutGlyphs(glyphs, options = {}) {
   return { items, rows:rows.length, bounds:{x:left, y:top, width:blockWidth, height:blockHeight}, cellSize, lineWidth, lineSpacing, align };
 }
 
+export const RAINBOW_LETTER_PALETTE = [
+  '#3b8f52', // 萌草绿 (好, 累, 很, 了)
+  '#3b8f52', // 萌草绿
+  '#7d5ba6', // 薰衣紫 (，, 明, 人)
+  '#7d5ba6', // 薰衣紫
+  '#dc5262', // 珊瑚粉红 (明, 待, ！)
+  '#3b8f52', // 萌草绿
+  '#3a67b3', // 晴空蓝 (好, 的, 对, 所, 有)
+  '#3a67b3', // 晴空蓝
+  '#3a67b3', // 晴空蓝
+  '#dc5262', // 珊瑚粉红
+  '#3b8f52', // 萌草绿
+  '#3a67b3', // 晴空蓝
+  '#3a67b3', // 晴空蓝
+  '#7d5ba6', // 薰衣紫
+  '#dc5262', // 珊瑚粉红
+];
+
+export function layoutDocumentGlyphs(glyphs, options = {}) {
+  const marginLeft = options.marginLeft !== undefined ? Number(options.marginLeft) : 45;
+  const marginTop = options.marginTop !== undefined ? Number(options.marginTop) : 40;
+  const maxWidth = 750;
+  const cellSize = clamp(options.cellSize, 24, 72, 46);
+  const lineSpacing = clamp(options.lineSpacing, 30, 100, 68);
+  const charGap = clamp(options.charGap, 0, 30, 8);
+  let curX = marginLeft;
+  let curRow = 0;
+  const items = [];
+  for (let i = 0; i < glyphs.length; i++) {
+    const glyph = glyphs[i];
+    if (glyph.character === '\n') {
+      curRow++;
+      curX = marginLeft;
+      continue;
+    }
+    const glyphWidth = (glyph.width || 1) * cellSize;
+    if (curX > marginLeft && curX + glyphWidth > marginLeft + maxWidth) {
+      curRow++;
+      curX = marginLeft;
+    }
+    const y = marginTop + curRow * lineSpacing;
+    items.push({ ...glyph, charIndex: i, x: curX, y, size: cellSize, row: curRow });
+    curX += glyphWidth + charGap;
+  }
+  return { items, rows: curRow + 1, cellSize, bounds: { x: marginLeft, y: marginTop, width: maxWidth, height: Math.max(lineSpacing, (curRow + 1) * lineSpacing) } };
+}
+
+
+function pointToSegmentDistance(p, a, b) {
+  const dx = b[0] - a[0], dy = b[1] - a[1];
+  const lenSq = dx * dx + dy * dy;
+  if (lenSq === 0) return Math.hypot(p[0] - a[0], p[1] - a[1]);
+  const t = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / lenSq));
+  return Math.hypot(p[0] - (a[0] + t * dx), p[1] - (a[1] + t * dy));
+}
+
+export function simplifyPolyline(points, epsilon = 3.2) {
+  if (points.length <= 2) return points;
+  let maxDist = 0, index = 0;
+  for (let i = 1; i < points.length - 1; i++) {
+    const d = pointToSegmentDistance(points[i], points[0], points[points.length - 1]);
+    if (d > maxDist) { maxDist = d; index = i; }
+  }
+  if (maxDist > epsilon) {
+    const left = simplifyPolyline(points.slice(0, index + 1), epsilon);
+    const right = simplifyPolyline(points.slice(index), epsilon);
+    return left.slice(0, -1).concat(right);
+  }
+  return [points[0], points[points.length - 1]];
+}
+
+export function snapGeometricPolyline(pts) {
+  const simplified = simplifyPolyline(pts, 3.2);
+  const out = [[...simplified[0]]];
+  for (let i = 1; i < simplified.length; i++) {
+    const p1 = out[i - 1], p2 = [...simplified[i]];
+    const dx = p2[0] - p1[0], dy = p2[1] - p1[1];
+    if (Math.abs(dy) <= Math.abs(dx) * 0.35 || Math.abs(dy) < 2.5) {
+      p2[1] = p1[1];
+    } else if (Math.abs(dx) <= Math.abs(dy) * 0.38 || Math.abs(dx) < 2.5) {
+      p2[0] = p1[0];
+    }
+    out.push(p2);
+  }
+  return out;
+}
+
 export function resamplePolyline(points, step = 3.5) {
   if (!points.length) return [];
   const out = [[...points[0]]];
@@ -83,6 +171,14 @@ export function resamplePolyline(points, step = 3.5) {
 
 // Smooth, low-frequency waviness adds thread tension without breaking legibility.
 export function transformStroke(points, placement, options = {}, random = seededRandom(1)) {
+  const isDoc = Boolean(options.documentMode);
+  if (isDoc) {
+    const snapped = snapGeometricPolyline(points);
+    return snapped.map(([px, py]) => [
+      placement.x + px * placement.size / 100,
+      placement.y + py * placement.size / 100
+    ]);
+  }
   const roughness = clamp(options.roughness, 0, 1, .65);
   const angle = (random() - .5) * .15 * roughness;
   const scale = 1 + (random() - .5) * .075 * roughness;
@@ -107,32 +203,48 @@ export function polylineToPath(points) {
 }
 
 export async function makeTextPattern(value, options = {}) {
-  const text = normalizeText(value, options);
+  const isDoc = Boolean(options.documentMode);
+  const text = normalizeText(value, { ...options, documentMode: isDoc });
   const characters = [...new Set([...text].filter(c => c !== '\n'))];
-  const entries = await Promise.all(characters.map(async c => [c, getLatinGlyph(c) || await loadHanzi(c)]));
+  const entries = await Promise.all(characters.map(async c => [c, getEmbroideryGlyph(c) || getLatinGlyph(c) || await loadHanzi(c)]));
   const glyphMap = new Map(entries);
   const missing = entries.filter(([,g]) => !g).map(([c]) => c);
   if (missing.length) throw new Error(`暂时还绣不了这些字符：${missing.join('、')}。请换成常用汉字、英文字母或标点。`);
+  const isRainbow = options.rainbow !== false && (!options.color || options.color === 'rainbow' || (isDoc && !options.singleColor));
   const normalizedOptions = {
-    roughness:clamp(options.roughness, 0, 1, .65),
+    roughness:clamp(options.roughness, 0, 1, isDoc ? .28 : .65),
     texture:options.texture === 'cotton' ? 'cotton' : 'wool',
-    color:/^#[0-9a-f]{6}$/i.test(options.color || '') ? options.color : '#cf9290',
-    seed:options.seed ?? hashSeed(text),
-    align:['left','center','right'].includes(options.align) ? options.align : 'center',
+    color:/^#[0-9a-f]{6}$/i.test(options.color || '') ? options.color : (isDoc ? '#3b8f52' : '#cf9290'),
+    seed:options.seed ?? (isDoc ? 42 : hashSeed(text)),
+    align:['left','center','right'].includes(options.align) ? options.align : (isDoc ? 'left' : 'center'),
     lineWidth:clamp(options.lineWidth, 4, 12, 5.5),
     lineSpacing:clamp(options.lineSpacing, 1, 2, 1.3),
-    maxGlyphs:clamp(options.maxGlyphs, 1, 500, 120)
+    maxGlyphs:clamp(options.maxGlyphs, 1, 500, 120),
+    documentMode:isDoc,
+    cellSize:options.cellSize,
+    rainbow:isRainbow
   };
-  const layout = layoutGlyphs([...text].map(c => c === '\n' ? {character:c} : {character:c,...glyphMap.get(c)}), normalizedOptions);
+  const glyphList = [...text].map(c => c === '\n' ? {character:c} : {character:c,...glyphMap.get(c)});
+  const layout = isDoc ? layoutDocumentGlyphs(glyphList, normalizedOptions) : layoutGlyphs(glyphList, normalizedOptions);
   const paths = [];
   for (let index = 0; index < layout.items.length; index++) {
     const item = layout.items[index];
-    // Every stroke in a glyph shares the same gentle handwritten tilt.
-    const glyphSeed = hashSeed(`${normalizedOptions.seed}:${index}`);
+    const glyphSeed = isDoc ? hashSeed(`doc_char_${index}_${item.character}`) : hashSeed(`${normalizedOptions.seed}:${index}`);
+    const charColor = normalizedOptions.rainbow
+      ? RAINBOW_LETTER_PALETTE[index % RAINBOW_LETTER_PALETTE.length]
+      : normalizedOptions.color;
     for (let strokeIndex = 0; strokeIndex < item.strokes.length; strokeIndex++) {
       const points = transformStroke(item.strokes[strokeIndex], item, normalizedOptions, seededRandom(glyphSeed));
-      paths.push({d:polylineToPath(points), color:normalizedOptions.color, handmade:true, texture:normalizedOptions.texture, strokeWidth:normalizedOptions.texture === 'wool' ? 2.1 : 1.5});
+      paths.push({
+        d:polylineToPath(points),
+        color:charColor,
+        handmade:true,
+        fineThread:isDoc || normalizedOptions.texture === 'cotton',
+        texture:normalizedOptions.texture,
+        strokeWidth:isDoc ? 1.85 : (normalizedOptions.texture === 'wool' ? 2.1 : 1.5)
+      });
     }
   }
-  return { id:`text-${hashSeed(text + JSON.stringify(normalizedOptions)).toString(36)}`, group:'text', name:text.length > 12 ? `${[...text].slice(0,11).join('')}…` : text, description:'把心里的话，一针一线慢慢绣下来。', difficulty:'自定义', customText:true, paths, text, options:normalizedOptions, bounds:layout.bounds, layout:{rows:layout.rows, cellSize:layout.cellSize} };
+  const id = isDoc ? 'typewriter-doc-pattern' : `text-${hashSeed(text + JSON.stringify(normalizedOptions)).toString(36)}`;
+  return { id, group:'text', name:text.length > 12 ? `${[...text].slice(0,11).join('')}…` : text, description:'把心里的话，一针一线慢慢绣下来。', difficulty:'自定义', customText:true, paths, text, options:normalizedOptions, bounds:layout.bounds, layout:{rows:layout.rows, cellSize:layout.cellSize} };
 }

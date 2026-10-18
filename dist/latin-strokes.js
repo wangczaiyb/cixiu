@@ -87,6 +87,11 @@ export const latinStrokes = {
   '♡':g(.85,'46,90 20,68 10,49 13,32 25,23 38,26 46,39 55,26 68,23 81,33 83,49 74,67 46,90'),
   '。':g(.38,'22,79 15,81 13,88 19,94 27,92 30,85 26,79 22,79'),
   '、':g(.30,'12,77 30,94'),
+  '，':g(.48,'24,72 16,86'),
+  '！':g(.45,'22,18 22,66|22,81 22,84'),
+  '？':g(.50,'14,24 24,16 34,22 30,38 24,52 24,66|24,80 24,83'),
+  '：':g(.36,'18,48 18,51|18,78 18,81'),
+  '；':g(.36,'18,48 18,51|22,72 16,86'),
   '…':g(.68,'13,78 14,79|34,78 35,79|56,78 57,79'),
   '·':g(.24,'20,56 21,57'),
   '《':g(.52,'31,26 12,55 31,84|52,26 33,55 52,84'),
@@ -97,10 +102,11 @@ export const latinStrokes = {
   '—':g(.92,'7,55 92,54'),
 };
 
-const aliases = { '，':',', '！':'!', '？':'?', '：':':', '；':';', '（':'(', '）':')', '【':'[', '】':']', '“':'"', '”':'"', '‘':"'", '’':"'", '～':'~', '＆':'&' };
+const aliases = { '（':'(', '）':')', '【':'[', '】':']', '“':'"', '”':'"', '‘':"'", '’':"'", '～':'~', '＆':'&' };
 for (const [alias, source] of Object.entries(aliases)) latinStrokes[alias] = latinStrokes[source];
 export function getLatinGlyph(character) {
   if (character === ' ' || character === '\u3000') return glyph(.38, []);
+  if (latinStrokes[character]) return latinStrokes[character];
   // Full-width Latin characters share the same original handwriting.
   const code = character.codePointAt(0);
   const key = code >= 0xff01 && code <= 0xff5e ? String.fromCodePoint(code - 0xfee0) : character;

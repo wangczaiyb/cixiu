@@ -2,15 +2,15 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#f7f4e9">
   <meta name="description" content="一针一线，绣一点可爱。挑选萌物图案，沿线慢慢刺绣，在针线间放松一下。">
   <title>一针一线 · 绣一点可爱</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./style.css?v=20261017">
-  <link rel="stylesheet" href="./editor.css?v=20261018-art3">
+  <link rel="stylesheet" href="./style.css?v=20261018-mobile1">
+  <link rel="stylesheet" href="./editor.css?v=20261018-mobile1">
   <style>.selection-sliders label{white-space:nowrap}.selection-sliders input{width:auto;flex:1}</style>
-  <script type="module" src="./editor-app.js?v=20261018-art3"></script>
+  <script type="module" src="./editor-app.js?v=20261018-mobile1"></script>
 </head>
 <body>
   <svg class="icon-defs" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -49,8 +49,30 @@
     <div class="workshop">
       <section class="workbench" aria-label="刺绣工作台">
         <div class="bench-top"><div class="work-label"><span class="live-dot"></span> 正在绣一点可爱 <span class="divider">/</span><span id="pattern-number">NO. 01</span></div><span class="save-status" id="save-status"><svg><use href="#i-check"/></svg>进度自动保存</span></div>
-        <div class="art-heading"><div><h2 id="pattern-name">午睡小熊</h2><p id="pattern-description">今天的心愿，是睡一个软软的午觉。</p></div><span class="difficulty" id="difficulty">入门 · 丝线填绣</span></div>
-        <div class="layout-toolbar"><div class="tool-segment"><button data-tool="layout" class="active" aria-pressed="true">↗ 摆放排版</button><button data-tool="sew" aria-pressed="false">⌁ 穿针刺绣</button></div><div><button id="arrange-layers">整理排布</button><button id="expand-board">展开绣布</button></div></div>
+        <div class="art-heading"><div><h2 id="pattern-name">布上心意 · 刺绣信笺</h2><p id="pattern-description">在棉麻质感布料上写信，边写边绣，图案像表情包一样随心打出并可直接拖动位置。</p></div><span class="difficulty" id="difficulty">刺绣写信 · 边写边绣</span></div>
+        <div class="typewriter-bar">
+          <div class="typewriter-input-wrap">
+            <span class="typewriter-badge">✉ 刺绣写信</span>
+            <textarea id="typewriter-input" class="typewriter-input" rows="2" placeholder="在布料信笺上打字写信（支持换行），边写边自动刺绣，字迹永不重置…" maxlength="240" autocomplete="off" spellcheck="false"></textarea>
+            <button id="typewriter-clear" class="typewriter-clear-btn" type="button" title="清空输入文字">×</button>
+          </div>
+          <div class="typewriter-toolbar-actions">
+            <button id="clear-canvas" class="typewriter-btn" type="button" title="清空信笺，开始写新的一封信">清空信笺</button>
+            <button id="arrange-layers" class="typewriter-btn" type="button" title="自动整理所有元素排布">整理排布</button>
+          </div>
+        </div>
+        <div class="typewriter-presets-bar">
+          <span class="preset-label">快捷写信：</span>
+          <button class="preset-chip" type="button" data-text-preset="好累，明明很好&#10;的对待了所有人！">🌸 好累，明明很好…</button>
+          <button class="preset-chip" type="button" data-text-preset="慢慢来，&#10;心愿会实现。">✨ 慢慢来，心愿会实现</button>
+          <button class="preset-chip" type="button" data-text-preset="愿生活像细碎针线，&#10;把平凡日子绣出欢喜。">✉ 愿生活像细碎针线…</button>
+        </div>
+        <div class="quick-stickers-bar">
+          <div class="quick-stickers-header">
+            <span class="quick-stickers-label"><svg><use href="#i-flower"/></svg> 表情贴纸（点击打出直接绣，可在布上拖动位置）：</span>
+          </div>
+          <div class="quick-stickers-scroller" id="quick-stickers"></div>
+        </div>
         <div class="canvas-stage" id="canvas-stage">
           <span class="stage-doodle doodle-one">✧</span><span class="stage-doodle doodle-two">✧</span>
           <div class="side-note">a little stitch,<br>a little peace.</div>
@@ -58,8 +80,8 @@
           <div class="canvas-tools"><button class="icon-btn" id="undo" aria-label="撤销上一段刺绣" title="撤销 Ctrl+Z" disabled><svg><use href="#i-undo"/></svg></button><span></span><button class="icon-btn selected" id="guides" aria-label="隐藏图案引导线" aria-pressed="true" title="显示或隐藏引导线"><svg><use href="#i-eye"/></svg></button><button class="icon-btn" id="reset" aria-label="重新绣当前图案" title="重新开始"><svg><use href="#i-reset"/></svg></button></div>
           <div class="zoom-tools"><button id="zoom-out" aria-label="缩小图案">−</button><output id="zoom-value" aria-label="图案缩放">100%</output><button id="zoom-in" aria-label="放大图案">＋</button></div>
         </div>
-        <div class="canvas-hint" id="canvas-hint"><span class="hint-line"></span><svg><use href="#i-needle"/></svg><span>按住图案慢慢填绣，亲手绣出一点可爱</span><span class="hint-line"></span></div>
-        <div class="selection-panel"><div class="selection-header"><strong id="selection-name">点选一个元素</strong><span><button id="duplicate-layer">复制</button><button id="delete-layer">移除</button></span></div><div class="selection-sliders"><label>大小 <input type="range" id="layer-size" min="15" max="300" value="64" aria-label="选中图案或文字的大小"><output id="layer-size-value">64%</output></label><label>旋转 <input type="range" id="layer-rotation" min="-45" max="45" value="0" aria-label="选中图案或文字的旋转角度"></label></div><div id="layer-list" class="layer-list" aria-label="绣布上的图案和文字"></div></div>
+        <div class="canvas-hint" id="canvas-hint"><span class="hint-line"></span><svg><use href="#i-needle"/></svg><span>像写信一样输入文字，图案可直接在布上拖动位置</span><span class="hint-line"></span></div>
+        <div class="selection-panel"><div class="selection-header"><strong id="selection-name">点选一个元素</strong><span><button id="duplicate-layer">复制</button><button id="delete-layer">移除</button></span></div><div class="quick-pos-group"><span class="tiny-label">贴纸快捷位置：</span><button type="button" data-pos="top-right">右上角</button><button type="button" data-pos="bottom-right">落款右下</button><button type="button" data-pos="bottom-left">左下角</button><button type="button" data-pos="center">居中</button></div><div class="selection-sliders"><label>大小 <input type="range" id="layer-size" min="15" max="300" value="64" aria-label="选中图案或文字的大小"><output id="layer-size-value">64%</output></label><label>旋转 <input type="range" id="layer-rotation" min="-45" max="45" value="0" aria-label="选中图案或文字的旋转角度"></label></div><div id="layer-list" class="layer-list" aria-label="绣布上的图案和文字"></div></div>
         <div class="playback-panel">
           <div class="progress-block"><div class="progress-text"><span>一针一线的进度</span><strong><span id="percent">0</span><small>%</small></strong></div><div class="progress-track" role="progressbar" aria-label="刺绣进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress"><span id="progress-fill"></span></div><span id="stitch-count">0 / 0 针</span></div>
           <div class="playback-actions"><div class="speed-control" aria-label="自动刺绣速度"><span>速度</span><button data-speed="1" aria-pressed="true" class="active">1×</button><button data-speed="2" aria-pressed="false">2×</button><button data-speed="4" aria-pressed="false">4×</button></div><button class="primary-btn" id="auto-stitch"><svg><use href="#i-play"/></svg><span>开始慢绣</span></button></div>
@@ -67,7 +89,7 @@
       </section>
 
       <aside class="supply-panel" aria-label="图案与刺绣工具">
-        <section class="supply-section patterns-section"><div class="section-heading"><h2><svg><use href="#i-flower"/></svg>图案与心意</h2><span id="patterns-count">26 款人气角色</span></div><p class="section-sub">点击加入绣布，可以放20个图案与文字。</p><div class="pattern-groups" id="pattern-groups" aria-label="图案分类"><button data-group="popular" aria-pressed="true" class="active">人气角色</button><button data-group="original" aria-pressed="false">萌物日常</button><button data-group="text" aria-pressed="false">绣文字</button></div><input id="pattern-search" class="pattern-search" type="search" placeholder="找找奶龙、罗小黑、Hello Kitty…" aria-label="搜索刺绣图案"><div class="pattern-grid" id="pattern-grid"></div><div id="text-composer" hidden><label class="form-label" for="custom-text">写下名字，或一句小心愿</label><textarea id="custom-text" rows="3" maxlength="240" placeholder="慢慢来，心愿会实现。">慢慢来\n会很可爱</textarea><div class="text-presets"><button data-text-preset="慢慢来">慢慢来</button><button data-text-preset="心愿会实现">心愿会实现</button><button data-text-preset="Love you">Love you</button><small id="text-count">8/120</small></div><div class="text-setting-row"><label>对齐<select id="text-align"><option value="left">靠左，像写信</option><option value="center" selected>居中</option><option value="right">靠右落款</option></select></label><label>线感<select id="text-texture"><option value="wool">松软毛线</option><option value="cotton">细棉手写</option></select></label></div><label class="range-label">随性手写感<input id="text-roughness" type="range" min="15" max="100" value="65"></label><div class="text-setting-row"><label>每行字宽<input id="text-width" type="number" min="3" max="12" step=".5" value="7"></label><label>段落行距<input id="text-spacing" type="number" min="1" max="2" step=".1" value="1.4"></label></div><button class="primary-btn" id="add-text">把这些字放上绣布</button><button class="letter-template-btn" id="open-letter">✉ 写一封绣在布上的信</button><p class="section-sub">最多120字，支持中英文字、换行和分段。</p></div></section>
+        <section class="supply-section patterns-section"><div class="section-heading"><h2><svg><use href="#i-flower"/></svg>图案与心意</h2><span id="patterns-count">26 款人气角色</span></div><p class="section-sub">点击加入绣布，可以放20个图案与文字。</p><div class="pattern-groups" id="pattern-groups" aria-label="图案分类"><button data-group="popular" aria-pressed="true" class="active">人气角色</button><button data-group="original" aria-pressed="false">萌物日常</button><button data-group="text" aria-pressed="false">绣文字</button></div><input id="pattern-search" class="pattern-search" type="search" placeholder="找找奶龙、罗小黑、Hello Kitty…" aria-label="搜索刺绣图案"><div class="pattern-grid" id="pattern-grid"></div><div id="text-composer" hidden><label class="form-label" for="custom-text">写下名字，或一句小心愿</label><textarea id="custom-text" rows="3" maxlength="240" placeholder="慢慢来，心愿会实现。">好累，明明很好&#10;的对待了所有人！</textarea><div class="text-presets"><button data-text-preset="好累，明明很好&#10;的对待了所有人！">好累，明明很好…</button><button data-text-preset="慢慢来&#10;会很可爱">慢慢来</button><button data-text-preset="愿生活像细碎的针线&#10;把平凡日子绣出欢喜">愿平凡日子…</button><small id="text-count">16/120</small></div><div class="text-setting-row"><label>对齐<select id="text-align"><option value="left" selected>靠左，像写信</option><option value="center">居中</option><option value="right">靠右落款</option></select></label><label>线感<select id="text-texture"><option value="cotton" selected>细棉手写</option><option value="wool">松软毛线</option></select></label></div><label class="range-label">随性手写感<input id="text-roughness" type="range" min="15" max="100" value="28"></label><div class="text-setting-row"><label>每行字宽<input id="text-width" type="number" min="3" max="12" step=".5" value="7"></label><label>段落行距<input id="text-spacing" type="number" min="1" max="2" step=".1" value="1.4"></label></div><button class="primary-btn" id="add-text">把这些字放上绣布</button><button class="letter-template-btn" id="open-letter">✉ 写一封绣在布上的信</button><p class="section-sub">最多120字，支持中英文字、换行和分段。</p></div></section>
         <section class="supply-section thread-section"><div class="section-heading"><h2>你的线盒</h2><button class="text-btn active" id="original-colors" aria-pressed="true">原配色 <span>↗</span></button></div><p class="section-sub" id="thread-name">跟着图案，换上刚刚好的颜色</p><div class="thread-palette" id="thread-palette"></div></section>
         <section class="supply-section stitch-section"><div class="section-heading"><h2>选一种针法</h2><span class="tiny-label">小小的不同</span></div><div class="stitch-options" id="stitch-options"><button data-stitch="stem" class="active" aria-pressed="true"><svg viewBox="0 0 64 22"><path d="M5 14 17 8 27 14 39 8 49 14 61 8"/></svg><span>丝线填绣</span></button><button data-stitch="cross" aria-pressed="false"><svg viewBox="0 0 64 22"><path d="m7 5 12 12m0-12L7 17M26 5l12 12m0-12L26 17M45 5l12 12m0-12L45 17"/></svg><span>十字绣</span></button><button data-stitch="running" aria-pressed="false"><svg viewBox="0 0 64 22"><path d="M5 11h10m9 0h10m9 0h10"/></svg><span>平针绣</span></button></div></section>
         <section class="supply-section fabric-section"><div class="section-heading"><h2>一块软软的绣布</h2><div id="fabric-palette" class="fabric-palette"></div></div></section>

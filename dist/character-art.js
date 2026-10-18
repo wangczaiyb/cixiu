@@ -1,3 +1,4 @@
+import {decodeImage} from './browser-support.js?v=20261018-mobile1';
 // Original character images stay unchanged. This working surface is sampled
 // into real thread runs at runtime, preserving the original face and outline.
 export function trimArtworkPixels(data, width, height) {
@@ -18,7 +19,7 @@ export function trimArtworkPixels(data, width, height) {
 }
 
 export async function loadCharacterArtwork(url,crop) {
-  const image=new Image();image.src=url;await image.decode();
+  const image=await decodeImage(new Image(),url);
   const [sx,sy,sw,sh]=crop||[0,0,image.naturalWidth,image.naturalHeight];
   const ratio=Math.min(1,1200/Math.max(sw,sh));
   const raw=document.createElement('canvas');raw.width=Math.round(sw*ratio);raw.height=Math.round(sh*ratio);
@@ -29,6 +30,7 @@ export async function loadCharacterArtwork(url,crop) {
   const c=canvas.getContext('2d',{willReadFrequently:true}),scale=Math.min(310/bounds.width,280/bounds.height);
   const w=bounds.width*scale,h=bounds.height*scale;
   c.drawImage(raw,bounds.x,bounds.y,bounds.width,bounds.height,200-w/2,195-h/2,w,h);
+  raw.width=raw.height=1;
   const sampled=c.getImageData(0,0,400,400).data;
   for(let i=0;i<sampled.length;i+=4)for(let channel=0;channel<3;channel++)sampled[i+channel]=Math.min(255,Math.round(sampled[i+channel]/17)*17);
   const preview=document.createElement('canvas');preview.width=preview.height=400;const pc=preview.getContext('2d');pc.drawImage(canvas,0,0);
@@ -36,5 +38,6 @@ export async function loadCharacterArtwork(url,crop) {
   t.strokeStyle='#fffef67d';t.lineWidth=.65;t.beginPath();t.moveTo(0,1);t.lineTo(8,2);t.moveTo(0,5);t.lineTo(8,6);t.stroke();
   t.strokeStyle='#3628192d';t.lineWidth=.65;t.beginPath();t.moveTo(0,3.5);t.lineTo(8,4.5);t.moveTo(0,7.5);t.lineTo(8,8.5);t.stroke();
   pc.globalCompositeOperation='source-atop';pc.fillStyle=pc.createPattern(tile,'repeat');pc.fillRect(0,0,400,400);pc.globalCompositeOperation='source-over';
+  canvas.width=canvas.height=1;tile.width=tile.height=1;
   return {preview,pixels:sampled,thumbnail:preview.toDataURL('image/png')};
 }

@@ -87,3 +87,23 @@ test('all 256 bundled shard objects have finite polylines and documented source/
   assert.equal(manifest.glyphs,count);
   assert.equal(manifest.license,'Arphic Public License');
 });
+
+test('documentMode starts from top-left margin and keeps prior glyph paths strictly invariant when new characters are appended', async () => {
+  const p1 = await makeTextPattern('你', { documentMode:true });
+  assert.equal(p1.id, 'typewriter-doc-pattern');
+  assert.ok(p1.bounds.x <= 50, `x should start near top-left margin (got ${p1.bounds.x})`);
+  assert.ok(p1.bounds.y <= 50, `y should start near top-left margin (got ${p1.bounds.y})`);
+  
+  const p2 = await makeTextPattern('你好', { documentMode:true });
+  assert.ok(p2.paths.length > p1.paths.length);
+  for (let i = 0; i < p1.paths.length; i++) {
+    assert.equal(p2.paths[i].d, p1.paths[i].d, `Path ${i} of previous character must remain invariant`);
+  }
+  
+  const p3 = await makeTextPattern('你好\n世界', { documentMode:true });
+  for (let i = 0; i < p2.paths.length; i++) {
+    assert.equal(p3.paths[i].d, p2.paths[i].d, `Path ${i} of previous line must remain invariant`);
+  }
+  assert.equal(p3.layout.rows, 2);
+});
+
