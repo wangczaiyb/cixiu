@@ -5,8 +5,8 @@ const p = (d, color = ink) => ({ d, color });
 
 export const domesticPatterns = [
   {
-    id: 'nailong', group: 'popular', name: '奶龙', category: '圆肚皮的小太阳',
-    description: '软软的奶黄色肚皮、橘色背鳍，还有一脸藏不住的开心。', difficulty: '进阶', paths: [
+    id: 'nailong', image: './assets/characters/nailong.png', group: 'popular', name: '奶龙', category: '圆肚皮的小太阳',
+    description: '奶龙官网原型：圆圆大肚皮、明亮绿眼睛和举起的小爪子。', difficulty: '进阶', paths: [
       p('M132 127 C116 104 129 86 151 94 C166 69 195 76 204 91 C226 79 249 96 246 119 C275 131 284 155 273 184 L260 204 C283 229 283 266 263 292 C245 317 191 324 153 309 C123 297 112 272 123 242 L126 218 C99 209 93 193 101 171 C103 151 113 137 132 127 Z', gold),
       p('M132 117 C129 105 134 97 145 99 M151 95 C159 87 171 84 181 89 M207 97 C219 89 235 100 235 112', '#e9b76a'),
       p('M111 167 C119 153 145 147 163 154 C179 160 181 176 170 185 C154 200 121 202 105 190', '#c89745'),
@@ -29,7 +29,7 @@ export const domesticPatterns = [
     ]
   },
   {
-    id: 'line-puppy', group: 'popular', name: '线条小狗', category: '毛茸茸的贴贴搭子',
+    id: 'line-puppy', image: './assets/characters/line-puppy.png', group: 'popular', name: '线条小狗', category: '毛茸茸的贴贴搭子',
     description: '垂耳、豆豆眼和圆爪爪，用蓬松的小针脚绣一只马尔济斯。', difficulty: '进阶', paths: [
       p('M129 142 C104 123 83 142 81 167 C80 190 90 214 108 218 L124 207 M271 143 C295 124 317 144 318 168 C319 194 308 215 290 217 L276 204', '#a4907a'),
       p('M130 146 C136 118 155 105 181 108 L174 99 L190 103 L201 93 L207 104 L221 98 L223 109 C251 108 269 123 275 149 C292 170 287 205 269 222 C251 242 222 248 199 246 C169 249 141 240 125 222 C105 203 107 166 130 146 Z', '#ae9e87'),
@@ -52,8 +52,8 @@ export const domesticPatterns = [
     ]
   },
   {
-    id: 'luo-xiaohei', group: 'popular', name: '罗小黑', category: '绿眼睛的猫咪精灵',
-    description: '墨色猫耳、翡翠眼睛和卷卷尾巴，把小黑的灵气绣进布面。', difficulty: '细作', paths: [
+    id: 'luo-xiaohei', image: './assets/characters/luo-xiaohei.png', imageCrop: [313, 358, 123, 143], group: 'popular', name: '罗小黑', category: '电影里的猫形小精灵',
+    description: '取自电影官方角色页的小黑猫形原型，圆圆眼睛、绿色耳朵与蓝色鼻尖清晰可见。', difficulty: '细作', paths: [
       p('M117 155 L105 85 Q105 78 114 81 L163 118 C185 111 217 111 239 119 L286 82 Q295 77 293 89 L282 158 C300 182 297 219 280 239 C262 261 231 267 201 265 C166 268 136 259 118 241 C99 222 98 182 117 155 Z', '#4b5261'),
       p('M119 137 L117 102 L143 124 Z M260 126 L281 102 L275 140 Z', '#8c8e9c'),
       p('M114 115 L126 124 M114 127 L131 136 M114 139 L123 145 M276 114 L287 107 M272 127 L284 119 M273 139 L282 132', '#5e6577'),
@@ -75,8 +75,8 @@ export const domesticPatterns = [
     ]
   },
   {
-    id: 'ali-fox', group: 'popular', name: '阿狸', category: '红狐狸的小心意',
-    description: '尖尖耳朵、桃心脸和一条蓬松尾巴，送你一颗暖暖的心。', difficulty: '细作', paths: [
+    id: 'ali-fox', image: './assets/characters/ali-fox.jpg', imageCrop: [210,560,600,900], group: 'popular', name: '阿狸', category: '经典红狐狸',
+    description: '按照阿狸品牌原型绣制，红色身体、奶油色脸与肚皮、白色小裤衩。', difficulty: '细作', paths: [
       p('M127 154 L119 95 Q120 83 132 91 L171 120 Q199 112 229 120 L269 90 Q282 83 280 99 L274 155 C294 175 291 211 273 232 C257 253 225 264 200 263 C169 264 142 255 126 235 C105 212 106 177 127 154 Z', '#cf6658'),
       p('M132 132 L130 106 L152 125 Z M246 126 L268 106 L265 135 Z', '#d9a397'),
       p('M126 111 L139 120 M125 123 L144 135 M126 137 L138 145 M271 112 L258 123 M272 125 L257 137 M271 140 L263 149', '#df8b71'),
@@ -98,8 +98,8 @@ export const domesticPatterns = [
     ]
   },
   {
-    id: 'pleasant-goat', group: 'popular', name: '喜羊羊', category: '青青草原的铃铛声',
-    description: '卷卷羊毛、小犄角和蓝色铃铛结，连跑步的鞋子也绣仔细。', difficulty: '细作', paths: [
+    id: 'pleasant-goat', image: './assets/characters/pleasant-goat.png', group: 'popular', name: '喜羊羊', category: '青青草原的铃铛声',
+    description: '按完整原型绣制，卷额毛、棕色羊角、蓝项圈和金铃铛。', difficulty: '细作', paths: [
       p('M128 154 C106 160 92 141 98 125 C81 117 90 96 107 98 C105 79 129 71 140 86 C150 66 175 72 179 88 C192 71 216 76 220 93 C234 76 258 83 260 101 C281 93 298 111 285 127 C302 141 286 163 273 159', '#b3a28b'),
       p('M116 139 C95 132 85 145 97 159 L121 169 M281 139 C304 131 317 148 302 162 L280 171', cream),
       p('M113 124 C89 112 91 87 109 85 C128 84 134 103 123 114 C114 122 103 110 112 105 M278 124 C301 111 299 86 281 85 C263 84 257 104 268 115 C277 122 290 110 280 104', '#9b7659'),
@@ -121,8 +121,8 @@ export const domesticPatterns = [
     ]
   },
   {
-    id: 'gg-bond', group: 'popular', name: '猪猪侠', category: '红色小英雄出发',
-    description: '护目镜、红色战衣和金色徽章，小小英雄也有满满的装备细节。', difficulty: '细作', paths: [
+    id: 'gg-bond', image: './assets/characters/gg-bond.png', group: 'popular', name: '猪猪侠', category: '红色小英雄出发',
+    description: '咏声官方全身原型：红色战衣、黄色手套与猪鼻徽章，小英雄精神满满。', difficulty: '细作', paths: [
       p('M123 162 C110 143 112 122 127 108 C139 86 169 78 201 79 C235 78 264 92 276 114 C288 134 282 159 271 170', red),
       p('M129 118 L116 99 Q115 89 125 92 L148 105 M251 104 L273 92 Q285 90 280 104 L270 121 M125 100 L135 111 M265 101 L260 111', '#c99b7b'),
       p('M130 126 C145 111 170 104 199 105 C231 104 256 116 270 135 L277 174 C281 213 249 245 201 247 C159 247 123 222 122 188 Z', '#cfaa87'),
@@ -145,8 +145,8 @@ export const domesticPatterns = [
     ]
   },
   {
-    id: 'nezha', group: 'popular', name: '哪吒', category: '风火轮上的小少年',
-    description: '双丸子头、混天绫、乾坤圈与风火轮，每一处都落上热烈的针脚。', difficulty: '挑战', paths: [
+    id: 'nezha', image: './assets/characters/nezha.png', group: 'popular', name: '哪吒', category: '《哪吒闹海》经典头像',
+    description: '按上影元官方经典头像落针，保留双髻、金耳环与英气眉眼。', difficulty: '挑战', paths: [
       p('M138 138 C122 115 137 87 160 82 C174 68 213 69 233 82 C262 86 274 112 260 139 L251 157 L145 158 Z', '#4e4650'),
       p('M139 102 C115 108 101 95 105 80 C108 65 132 61 146 75 C158 58 179 67 175 82 M226 80 C224 63 247 59 259 75 C276 60 297 71 295 87 C292 103 272 106 260 100', '#4e4650'),
       p('M115 77 C121 71 134 73 140 80 M112 85 Q124 98 140 87 M247 76 Q258 83 258 95 M272 75 Q284 78 283 91 M150 80 L162 89 M238 83 L246 95', '#79636b'),
@@ -170,8 +170,8 @@ export const domesticPatterns = [
     ]
   },
   {
-    id: 'eggy-party', group: 'popular', name: '蛋仔', category: '圆滚滚的快乐搭子',
-    description: '奶黄蛋壳、运动帽和小挎包，把一颗快乐绣得胖乎乎。', difficulty: '进阶', paths: [
+    id: 'eggy-party', image: './assets/characters/eggy-party.png', group: 'popular', name: '蛋仔', category: '白帽涂鸦款蛋仔',
+    description: '按蛋仔派对官网完整原型绣制，白帽子配彩色涂鸦防护服。', difficulty: '进阶', paths: [
       p('M123 163 C117 128 132 97 160 84 C184 72 216 72 241 85 C268 98 282 131 277 166 C295 184 300 218 284 244 C268 274 235 289 200 288 C162 289 132 272 116 246 C100 220 107 184 123 163 Z', '#d8a553'),
       p('M125 151 C134 107 154 93 196 91 C237 90 263 112 274 150 M137 133 L144 113 M148 119 L157 102 M245 114 L251 131 M253 126 L259 143', '#edc37b'),
       p('M130 120 C133 92 151 74 175 70 C188 55 215 57 228 72 C253 77 270 95 270 119 L263 132 L137 132 Z', '#bb8c92'),
@@ -193,8 +193,8 @@ export const domesticPatterns = [
     ]
   },
   {
-    id: 'snow-king', group: 'popular', name: '雪王', category: '甜甜蜜蜜的雪人',
-    description: '小皇冠、飘起来的红围巾和冰淇淋权杖，绣一份甜蜜蜜。', difficulty: '细作', paths: [
+    id: 'snow-king', image: './assets/characters/snow-king.png', group: 'popular', name: '雪王', category: '甜甜蜜蜜的雪人',
+    description: '蜜雪官方经典原型：小皇冠、红披风和冰淇淋权杖，绣一份甜蜜蜜。', difficulty: '细作', paths: [
       p('M150 137 C136 113 145 90 164 82 C176 63 197 69 202 79 C216 64 240 72 240 91 C259 92 267 115 251 135 C269 148 275 172 264 193 C254 214 232 222 202 222 C175 224 147 216 137 197 C124 173 131 151 150 137 Z', '#a8b3b8'),
       p('M160 113 L148 71 L172 83 L186 56 L202 80 L224 58 L233 85 L256 72 L244 115 Z M162 104 L246 104 M166 111 L243 111', '#cc9d49'),
       p('M184 85 L190 78 L198 86 L190 96 Z M215 86 L221 78 L228 86 L222 95 Z M161 88 L165 96 M241 89 L238 96', '#d77c77'),
@@ -216,8 +216,8 @@ export const domesticPatterns = [
     ]
   },
   {
-    id: 'black-cat-detective', group: 'popular', name: '黑猫警长', category: '森林里的正义伙伴',
-    description: '警帽、白手套、金色肩章与锐利目光，制服上的缝线一并绣好。', difficulty: '挑战', paths: [
+    id: 'black-cat-detective', image: './assets/characters/black-cat-detective.png', group: 'popular', name: '黑猫警长', category: '森林卫士的经典头像',
+    description: '按上影元官方经典头像落针，绣出白色警帽、黄色眼睛与严肃神情。', difficulty: '挑战', paths: [
       p('M129 150 L113 101 L159 122 C185 113 215 113 241 122 L287 100 L271 154 C291 171 292 204 275 226 C261 246 231 257 201 256 C167 257 141 247 126 229 C108 207 110 175 129 150 Z', '#50545e'),
       p('M126 133 L124 114 L143 128 Z M258 129 L276 114 L269 138 Z M119 119 L130 128 M119 130 L134 140 M278 118 L267 128 M278 129 L266 140', '#a48285'),
       p('M129 127 L126 108 C137 91 164 79 199 79 C231 78 261 90 274 108 L271 130 Z', '#5d7e9c'),

@@ -1,3 +1,5 @@
+import {sampleFillStitches} from './fill-stitches.js?v=20261018-art3';
+import {loadCharacterArtwork} from './character-art.js?v=20261018-art3';
 export const BOARD = { width: 1100, height: 800, ox: 130, oy: 145, artWidth: 840, artHeight: 510 };
 export function transformPoint(point, layer) {
   const angle = (layer.rotation || 0) * Math.PI / 180;
@@ -22,10 +24,19 @@ export class CompositionState {
   removeLayer(id){for(const key of this.marks.keys())if(key.startsWith(id+':'))this.marks.delete(key);}
 }
 export class Geometry {
-  constructor(){this.cache=new Map();}
+  constructor(){this.cache=new Map();this.artwork=new Map();}
+  async prepareImage(pattern){if(!pattern.image)return;const art=await loadCharacterArtwork(pattern.image,pattern.imageCrop);this.artwork.set(pattern.id,art);this.cache.delete(pattern.id);pattern.thumbnail=art.thumbnail;}
   get(pattern){
     if(this.cache.has(pattern.id))return this.cache.get(pattern.id);
+    const artwork=this.artwork.get(pattern.id);
+    if(artwork){const data={paths:[{image:artwork.preview}],samples:sampleFillStitches(artwork.pixels,400,400)};this.cache.set(pattern.id,data);return data;}
+    if(pattern.image)return{paths:[],samples:[]};
     const paths=[],samples=[];
+    if(pattern.paths.some(p=>p.fill)){
+      const mask=document.createElement('canvas');mask.width=mask.height=400;const c=mask.getContext('2d',{willReadFrequently:true});
+      for(const p of pattern.paths)if(p.fill){c.fillStyle=p.fill;c.fill(new Path2D(p.d));}
+      samples.push(...sampleFillStitches(c.getImageData(0,0,400,400).data,400,400));
+    }
     for(const meta of pattern.paths)for(const d of meta.d.split(/(?=M)/).filter(Boolean)){
       const element=document.createElementNS('http://www.w3.org/2000/svg','path');element.setAttribute('d',d);
       const length=element.getTotalLength(),count=Math.max(2,Math.ceil(length/(meta.handmade?2.5:3.4))),path=paths.length;
@@ -37,7 +48,7 @@ export class Geometry {
   scene(layers,registry){const samples=[],paths=[],bounds=new Map();
     for(const layer of layers){const pattern=registry.get(layer.patternId);if(!pattern)continue;const g=this.get(pattern);let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
       for(const s of g.samples){const a=transformPoint({x:s.x1,y:s.y1},layer),b=transformPoint({x:s.x2,y:s.y2},layer);const x=(a.x+b.x)/2,y=(a.y+b.y)/2;minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y);samples.push({...s,id:samples.length,key:`${layer.id}:${s.path}:${s.n}`,layerId:layer.id,x1:a.x,y1:a.y,x2:b.x,y2:b.y,x,y,scale:layer.scale});}
-      paths.push(...g.paths.map(p=>({...p,layer})));bounds.set(layer.id,{minX:minX-10,minY:minY-10,maxX:maxX+10,maxY:maxY+10});
+      paths.push(...g.paths.map(p=>({...p,layer})));if(g.samples.length)bounds.set(layer.id,{minX:minX-10,minY:minY-10,maxX:maxX+10,maxY:maxY+10});
     }return{samples,paths,bounds};
   }
 }

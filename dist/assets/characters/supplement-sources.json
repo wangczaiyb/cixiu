@@ -1,0 +1,88 @@
+{
+  "eggy-party": {
+    "character_name": "蛋仔",
+    "source": "https://party.res.netease.com/pc/gw/20230509182436/img/b_aq_27c079de.png",
+    "reference_page": "https://party.163.com/",
+    "official": true,
+    "unmodified": true,
+    "width": 800,
+    "height": 800,
+    "notes": "Official Eggy Party website transparent single-character 3D artwork; white cap and graffiti protective clothing variation.",
+    "sha256": "14be3ea9b50449746965f1f1bf92a0f4f77892c01b1cba0bee6df1eff1938274",
+    "verification": {
+      "checked_at": "2026-10-18T02:22:19.069Z",
+      "decoded": true,
+      "decode_method": "System.Drawing.Bitmap full PNG encode in memory (original file unchanged)",
+      "visual_character_match": true,
+      "source_bytes_preserved": true
+    }
+  },
+  "ali-fox": {
+    "character_name": "Ali the Fox",
+    "source": "https://20047034.s21i.faiusr.com/2/ABUIABACGAAg8a3RhgYok_vA2AUw1hQ4lww.jpg",
+    "reference_page": "http://www.shipic.org/h-nd-570.html",
+    "publisher": "China Advertising Association Cultural and Creative IP Committee",
+    "source_description": "Dream Castle Ali brand introduction presentation, slide 00, published as Ali on the cultural/IP industry service platform.",
+    "official": false,
+    "unmodified": true,
+    "width": 2646,
+    "height": 1559,
+    "imageCrop": [
+      210,
+      560,
+      600,
+      900
+    ],
+    "notes": "Original brand presentation retained without pixel modification. Crop selects the complete classic 2D red fox with cream face/belly and white shorts on plain white background. The website is an industry platform source, not a verified rights-holder domain.",
+    "sha256": "bda50d9fc7833200ee675cf9d7ae88670b57d034a98ee04eb6205a519d67f4e5",
+    "verification": {
+      "checked_at": "2026-10-18T02:22:19.070Z",
+      "decoded": true,
+      "decode_method": "System.Drawing.Bitmap full PNG encode in memory (original file unchanged)",
+      "visual_character_match": true,
+      "source_bytes_preserved": true,
+      "crop_corners_rgb": [
+        [
+          255,
+          255,
+          255
+        ],
+        [
+          255,
+          255,
+          255
+        ],
+        [
+          255,
+          255,
+          255
+        ],
+        [
+          255,
+          255,
+          255
+        ]
+      ]
+    }
+  },
+  "pleasant-goat": {
+    "character_name": "Pleasant Goat (Xi Yangyang)",
+    "source": "https://huiji-public.huijistatic.com/xyy/uploads/0/0d/%E5%96%9C%E7%BE%8A%E7%BE%8A%E6%96%B0%E7%94%BB%E9%A3%8E2.png",
+    "reference_page": "https://xyy.huijiwiki.com/wiki/%E5%96%9C%E7%BE%8A%E7%BE%8A",
+    "official_reference_page": "https://www.22dm.com/",
+    "publisher": "Yangyang Encyclopedia (Huiji Wiki)",
+    "official": false,
+    "unmodified": true,
+    "width": 488,
+    "height": 697,
+    "notes": "Character encyclopedia original-size PNG repost, modern complete single character. White wool, curled forelock, brown horns, blue collar/shoes and gold bell match the official Pleasant Goat prototype. Not claimed to be an official-source file.",
+    "sha256": "e224ce7e29b25b3fbb75382e9c626d9ee197531d26c8d06f04e9aed8bd07c66f",
+    "verification": {
+      "checked_at": "2026-10-18T02:22:19.070Z",
+      "decoded": true,
+      "decode_method": "System.Drawing.Bitmap full PNG encode in memory (original file unchanged)",
+      "visual_character_match": true,
+      "source_bytes_preserved": true
+    }
+  }
+}

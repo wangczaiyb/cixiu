@@ -1,0 +1,71 @@
+[
+  {
+    "name": "奶龙",
+    "notes": "官网IP介绍透明全身原图，未修改。",
+    "file": "nailong.png",
+    "id": "nailong",
+    "owner": "深圳市第七印象影视传媒有限公司 / 奶龙官方",
+    "sourcePage": "https://www.nailoong.com/ipStar/Nailong/",
+    "imageUrl": "https://www.nailoong.com/_ipx/q_85/img/ipStar/image_nailoong.png"
+  },
+  {
+    "name": "线条小狗",
+    "notes": "Maltese puppy life，作者Moonlab发布的LINE官方商店透明单角色原图，未修改。",
+    "file": "line-puppy.png",
+    "id": "line-puppy",
+    "owner": "Moonlab",
+    "sourcePage": "https://store.line.me/stickershop/product/17142161/en",
+    "imageUrl": "https://stickershop.line-scdn.net/stickershop/v1/sticker/443337430/iPhone/sticker@2x.png"
+  },
+  {
+    "name": "猪猪侠",
+    "notes": "官网角色介绍透明全身原图，未修改。",
+    "file": "gg-bond.png",
+    "id": "gg-bond",
+    "owner": "广东咏声动漫股份有限公司",
+    "sourcePage": "https://www.winsing.net/ipStar/ipStarZz/",
+    "imageUrl": "https://www.winsing.net/style/cn/images/ipxq/ipxqZz/11.png"
+  },
+  {
+    "name": "雪王",
+    "notes": "雪王百科经典冰淇淋权杖完整形象，浅粉色纯色底，原图未修改。",
+    "file": "snow-king.png",
+    "id": "snow-king",
+    "owner": "蜜雪冰城",
+    "sourcePage": "https://www.mxbc.com/encyclopedia.html",
+    "imageUrl": "https://oss.mxbc.com/uploads/images/202508/9d480354bc675ef4ed43ab456ef7a17b.png"
+  },
+  {
+    "name": "罗小黑",
+    "notes": "未修改官网原始PNG。运行时仅选取原图右下角完整猫形；避免将左侧人形及角色姓名一并绣入。",
+    "imageCrop": [
+      313,
+      358,
+      123,
+      143
+    ],
+    "imageUrl": "https://luoxiaohei-movie.com/assets/img/character/chara_01.png",
+    "id": "luo-xiaohei",
+    "sourcePage": "https://luoxiaohei-movie.com/character/",
+    "owner": "北京寒木春华动画技术有限公司 / Aniplex 电影日本官方",
+    "file": "luo-xiaohei.png"
+  },
+  {
+    "file": "black-cat-detective.png",
+    "id": "black-cat-detective",
+    "imageUrl": "https://www.sfi-sh.com/Upload/Contact-IP/icon_ip2.png?sign=1a7109c901d9144ceabf99e57fa7997b&time=1792291340",
+    "name": "黑猫警长",
+    "owner": "上影元（上海）文化科技发展有限公司 / 上海美术电影制片厂",
+    "sourcePage": "https://www.sfi-sh.com/contact",
+    "notes": "官网业务咨询IP选择中的无水印透明经典头像，原图未修改。经典全身展示图带水印，未采用。"
+  },
+  {
+    "file": "nezha.png",
+    "id": "nezha",
+    "imageUrl": "https://www.sfi-sh.com/Upload/Contact-IP/icon_ip3.png?sign=6b255f801a81d2eeb0be7782889aedb4&time=1792291340",
+    "name": "哪吒",
+    "owner": "上影元（上海）文化科技发展有限公司 / 上海美术电影制片厂",
+    "sourcePage": "https://www.sfi-sh.com/contact",
+    "notes": "《哪吒闹海》经典版。官网业务咨询IP选择中的无水印透明头像，原图未修改。经典全身展示图带水印，未采用。"
+  }
+]

@@ -1,6 +1,6 @@
-import {patterns,palette,fabrics} from './patterns.js';
-import {BOARD,defaultLayers,arrangeLayers,CompositionState,Geometry} from './composition.js';
-import {Painter} from './renderer.js';
+import {patterns,palette,fabrics} from './patterns.js?v=20261018-art3';
+import {BOARD,defaultLayers,arrangeLayers,CompositionState,Geometry} from './composition.js?v=20261018-art3';
+import {Painter} from './renderer.js?v=20261018-art3';
 import {MachineAudio} from './machine-audio.js';
 import {makeTextPattern} from './text-strokes.js';
 const $=id=>document.getElementById(id),icon=id=>`<svg aria-hidden="true"><use href="#i-${id}"/></svg>`;
@@ -10,23 +10,27 @@ const KEY='little-stitch-composition-v3',GALLERY='little-stitch-gallery-v1';
 function read(key,fallback){try{return JSON.parse(localStorage.getItem(key))||fallback;}catch{return fallback;}}
 function write(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch{toast('浏览器存储空间不足，请下载图片留存');return false;}}
 const saved=read(KEY,{});
+const ART_REVISION=3;
 for(const p of (saved.customPatterns||[]).slice(0,20))if(typeof p.id==='string'&&p.id.startsWith('text-')&&Array.isArray(p.paths)&&p.paths.length<4000&&p.paths.every(s=>typeof s.d==='string'&&s.d.length<15000&&/^#[0-9a-f]{6}$/i.test(s.color)))registry.set(p.id,p);
-let layers=Array.isArray(saved.layers)?saved.layers.filter(l=>registry.has(l.patternId)&&Number.isFinite(l.x)&&Number.isFinite(l.y)&&Number.isFinite(l.scale)&&l.scale>=.15&&l.scale<=3&&typeof l.id==='string').slice(0,20):defaultLayers(['hello-kitty','kuromi','cinnamoroll','my-melody','pompompurin']);
-let state=new CompositionState(Array.isArray(saved.marks)?saved.marks:[]),scene,selected=layers[0]?.id||null;
+let layers=Array.isArray(saved.layers)?saved.layers.filter(l=>registry.has(l.patternId)&&Number.isFinite(l.x)&&Number.isFinite(l.y)&&Number.isFinite(l.scale)&&l.scale>=.15&&l.scale<=3&&typeof l.id==='string').slice(0,20):defaultLayers(['hello-kitty','kuromi','cinnamoroll','my-melody','rilakkuma']);
+const retainedMarks=Array.isArray(saved.marks)?saved.marks:[];
+const revisedLayers=new Set(saved.artRevision===ART_REVISION?[]:layers.filter(l=>!registry.get(l.patternId)?.customText).map(l=>l.id));
+let state=new CompositionState(retainedMarks.filter(m=>![...revisedLayers].some(id=>m.key?.startsWith(id+':')))),scene,selected=layers[0]?.id||null;
 let fabric=fabrics.some(f=>f.color===saved.fabric)?saved.fabric:fabrics[0].color,group='popular',tool='layout',style='stem',chosenColor=null,zoom=1,guides=true;
 let speed=1,running=false,drawing=false,drag=null,next=0,carry=0,lastTime=0,active=null,dirty=true,lastRender=0,saveTimer,toastTimer,doneShown=false;
 let machine=saved.machine!==false,sound=saved.sound!==false,volume=typeof saved.volume==='number'?saved.volume:.45;
 const audio=new MachineAudio({enabled:sound,volume,machine});
 let gallery=read(GALLERY,[]);if(!Array.isArray(gallery))gallery=[];gallery=gallery.filter(a=>a&&typeof a.image==='string'&&a.image.startsWith('data:image/png;')).slice(-12);
 let exported=null;
+let artworkReady=false;
 function toast(message){$('toast').textContent=message;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),2700);}
-function save(){clearTimeout(saveTimer);const customPatterns=[...new Set(layers.map(l=>l.patternId))].map(id=>registry.get(id)).filter(p=>p?.customText);const ok=write(KEY,{version:3,layers,marks:[...state.marks.values()],customPatterns,fabric,machine,sound,volume});$('save-status').textContent=ok?'✓ 排版与针线已保存':'请下载图片留存';}
+function save(){clearTimeout(saveTimer);const customPatterns=[...new Set(layers.map(l=>l.patternId))].map(id=>registry.get(id)).filter(p=>p?.customText);const ok=write(KEY,{version:3,artRevision:ART_REVISION,layers,marks:[...state.marks.values()],customPatterns,fabric,machine,sound,volume});$('save-status').textContent=ok?'✓ 排版与针线已保存':'请下载图片留存';}
 function scheduleSave(){clearTimeout(saveTimer);saveTimer=setTimeout(save,450);}
-function rebuild(){scene=geometry.scene(layers,registry);const valid=new Set(scene.samples.map(s=>s.key));for(const key of state.marks.keys())if(!valid.has(key))state.marks.delete(key);next=0;dirty=true;doneShown=false;updateProgress();updateSelection();scheduleSave();}
-function thumb(p){return `<svg viewBox="35 35 330 310" aria-hidden="true">${p.paths.map(s=>`<path d="${s.d}" fill="none" stroke="${s.color}" stroke-width="${s.strokeWidth||4}" stroke-linecap="round" stroke-linejoin="round"/>`).join('')}</svg>`;}
+function rebuild(){if(!artworkReady)return;scene=geometry.scene(layers,registry);const valid=new Set(scene.samples.map(s=>s.key));for(const key of state.marks.keys())if(!valid.has(key))state.marks.delete(key);next=0;dirty=true;doneShown=false;updateProgress();updateSelection();scheduleSave();}
+function thumb(p){if(p.imageCrop&&!p.thumbnail)return '<span class="character-loading" aria-hidden="true">正在准备图案…</span>';if(p.image)return `<img class="character-preview" src="${p.thumbnail||p.image}" alt="" loading="lazy">`;const grain='thread-'+p.id;return `<svg viewBox="35 35 330 310" aria-hidden="true"><defs><pattern id="${grain}" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(-12)"><path d="M0 1H5" stroke="#ffffff" stroke-opacity=".35" stroke-width=".9"/><path d="M0 4H5" stroke="#33291d" stroke-opacity=".08" stroke-width=".6"/></pattern></defs>${p.paths.map(s=>`<path d="${s.d}" fill="${s.fill||'none'}" stroke="${s.color}" stroke-width="${s.strokeWidth||3.2}" stroke-linecap="round" stroke-linejoin="round"/>${s.fill?`<path d="${s.d}" fill="url(#${grain})" stroke="none"/>`:''}`).join('')}</svg>`;}
 function buildControls(){
   const query=$('pattern-search').value.trim().toLowerCase();
-  $('pattern-grid').innerHTML=patterns.filter(p=>(p.group||'original')===group&&(!query||p.name.toLowerCase().includes(query))).map(p=>`<button class="pattern-card" data-pattern="${p.id}" aria-label="添加${p.name}">${thumb(p)}<span>${p.name}</span><b class="add-badge">＋</b></button>`).join('');
+  $('pattern-grid').innerHTML=patterns.filter(p=>(p.group||'original')===group&&(!query||p.name.toLowerCase().includes(query))).map(p=>`<button class="pattern-card" data-pattern="${p.id}" aria-label="添加${p.name}"${p.unavailable?' disabled':''}>${thumb(p)}<span>${p.name}</span><b class="add-badge">＋</b></button>`).join('');
   document.querySelectorAll('[data-group]').forEach(b=>{b.classList.toggle('active',b.dataset.group===group);b.setAttribute('aria-pressed',b.dataset.group===group);});
   $('pattern-grid').hidden=group==='text';$('pattern-search').hidden=group==='text';$('text-composer').hidden=group!=='text';
   $('patterns-count').textContent=patterns.filter(p=>p.group==='popular').length+' 款人气角色';
@@ -38,9 +42,9 @@ function updateSelection(){const l=layers.find(l=>l.id===selected),p=l&&registry
   $('pattern-name').textContent='我的心意绣布';$('pattern-description').textContent='把角色、文字和小心愿，慢慢排在一起。';$('pattern-number').textContent=`${layers.length} / 20 个元素`;
   const list=$('layer-list');list.replaceChildren();for(const layer of layers){const button=document.createElement('button');button.className='layer-chip'+(layer.id===selected?' active':'');button.textContent=registry.get(layer.patternId)?.name||'文字';button.setAttribute('aria-pressed',layer.id===selected);button.addEventListener('click',()=>{pause();selected=layer.id;setTool('layout');updateSelection();dirty=true;});list.append(button);}
 }
-function updateProgress(){const total=scene?.samples.length||0,count=state.marks.size,percent=total?Math.floor(count/total*100):0;$('percent').textContent=percent;$('progress-fill').style.width=percent+'%';$('progress').setAttribute('aria-valuenow',percent);$('stitch-count').textContent=`${count} / ${total} 针`;$('undo').disabled=!count;$('save-art').disabled=!count;$('auto-stitch').disabled=!total||count===total;$('auto-stitch').innerHTML=icon(count===total&&total?'check':running?'pause':'play')+`<span>${count===total&&total?'绣好啦':running?'歇一小会':count?'继续慢绣':'开始慢绣'}</span>`;$('canvas-hint').textContent=tool==='layout'?'拖动摆放 · 下方单独调大小 · 图案和文字可以一起绣':running?'针头正在起落，一点点绣出你的心意':'按住并沿虚线拖动，或让针织机帮你慢慢绣';}
+function updateProgress(){const total=scene?.samples.length||0,count=state.marks.size,percent=total?Math.floor(count/total*100):0;$('percent').textContent=percent;$('progress-fill').style.width=percent+'%';$('progress').setAttribute('aria-valuenow',percent);$('stitch-count').textContent=`${count} / ${total} 针`;$('undo').disabled=!count;$('save-art').disabled=!count;$('auto-stitch').disabled=!total||count===total;$('auto-stitch').innerHTML=icon(count===total&&total?'check':running?'pause':'play')+`<span>${count===total&&total?'绣好啦':running?'歇一小会':count?'继续慢绣':'开始慢绣'}</span>`;$('canvas-hint').textContent=tool==='layout'?'拖动摆放 · 下方单独调大小 · 图案和文字可以一起绣':running?'针头正在起落，一点点绣出你的心意':'按住图案慢慢填绣，或让针织机帮你绣';}
 function setTool(value){tool=value;document.querySelectorAll('[data-tool]').forEach(b=>{b.classList.toggle('active',b.dataset.tool===value);b.setAttribute('aria-pressed',b.dataset.tool===value);});canvas.style.cursor=tool==='layout'?'grab':'crosshair';dirty=true;updateProgress();}
-function addLayer(pattern,position){if(layers.length>=20){toast('一块绣布最多放20个元素，可以先移除一个');return false;}pause();if(!registry.has(pattern.id))registry.set(pattern.id,pattern);
+function addLayer(pattern,position){if(!artworkReady){toast('正在准备角色原图，请稍等片刻');return false;}if(layers.length>=20){toast('一块绣布最多放20个元素，可以先移除一个');return false;}pause();if(!registry.has(pattern.id))registry.set(pattern.id,pattern);
   const spots=[[140,130],[420,130],[700,130],[140,390],[420,390],[700,390],[280,260],[560,260],[420,255]];const spot=spots.find(([x,y])=>layers.every(l=>Math.hypot(l.x-x,l.y-y)>130))||spots[layers.length%spots.length];
   const layer={id:'layer-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6),patternId:pattern.id,x:spot[0],y:spot[1],scale:pattern.customText?1:.62,rotation:0,...position};layers.push(layer);selected=layer.id;setTool('layout');rebuild();return true;}
 function point(event){const r=canvas.getBoundingClientRect(),scale=Math.min(r.width/BOARD.width,r.height/BOARD.height),left=r.left+(r.width-BOARD.width*scale)/2,top=r.top+(r.height-BOARD.height*scale)/2;const x=(event.clientX-left)/scale,y=(event.clientY-top)/scale;return{x:(x-BOARD.width/2)/zoom+BOARD.width/2-BOARD.ox,y:(y-BOARD.height/2)/zoom+BOARD.height/2-BOARD.oy};}
@@ -48,13 +52,13 @@ function sync(){audio.setActive(running||drawing);$('canvas-stage').classList.to
 function pause(){running=false;carry=0;state.commit();sync();updateProgress();scheduleSave();dirty=true;}
 function sew(p){let closest=null,distance=15/zoom;for(const s of scene.samples){const d=Math.hypot(s.x-p.x,s.y-p.y);if(d<distance){distance=d;closest=s;}}if(!closest)return;let changed=false;for(let i=Math.max(0,closest.id-1);i<=Math.min(scene.samples.length-1,closest.id+1);i++){const s=scene.samples[i];if(s.layerId!==closest.layerId||s.path!==closest.path)continue;changed=addStitch(s)||changed;}if(changed){updateProgress();scheduleSave();dirty=true;}}
 function addStitch(s){const color=chosenColor||s.color;if(!state.add(s,color,style))return false;active={sample:s,color,at:performance.now()};audio.stitch();return true;}
-canvas.addEventListener('pointerdown',e=>{if(e.button!==0)return;const p=point(e);if(p.x<0||p.y<0||p.x>840||p.y>510)return;pause();canvas.setPointerCapture(e.pointerId);
+canvas.addEventListener('pointerdown',e=>{if(!artworkReady||e.button!==0)return;const p=point(e);if(p.x<0||p.y<0||p.x>840||p.y>510)return;pause();canvas.setPointerCapture(e.pointerId);
   if(tool==='layout'){const hit=[...layers].reverse().find(l=>{const b=scene.bounds.get(l.id);return b&&p.x>b.minX&&p.x<b.maxX&&p.y>b.minY&&p.y<b.maxY;});if(hit){selected=hit.id;drag={id:hit.id,x:p.x,y:p.y,lx:hit.x,ly:hit.y};updateSelection();dirty=true;}else{selected=null;updateSelection();dirty=true;}}
   else{drawing=true;audio.unlock();sync();sew(p);}});
 canvas.addEventListener('pointermove',e=>{const p=point(e);if(drag){const l=layers.find(l=>l.id===drag.id);if(l){l.x=Math.max(30,Math.min(810,drag.lx+p.x-drag.x));l.y=Math.max(35,Math.min(475,drag.ly+p.y-drag.y));scene=geometry.scene(layers,registry);dirty=true;}}else if(drawing)sew(p);});
 function release(){if(drag){drag=null;scheduleSave();}if(drawing){drawing=false;state.commit();sync();scheduleSave();}dirty=true;}
 for(const name of['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(name,release);
-function start(){if(running){pause();return;}if(!scene.samples.length)return;setTool('sew');audio.unlock();running=true;next=0;carry=0;lastTime=performance.now();sync();updateProgress();}
+function start(){if(!artworkReady||!scene?.samples.length)return;if(running){pause();return;}setTool('sew');audio.unlock();running=true;next=0;carry=0;lastTime=performance.now();sync();updateProgress();}
 $('auto-stitch').addEventListener('click',start);
 canvas.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();start();}});
 function frame(time){const dt=Math.min(100,time-(lastTime||time));lastTime=time;if(running){carry+=dt*.036*speed;let n=Math.floor(carry);carry-=n;let changed=false;while(n-->0){while(next<scene.samples.length&&state.marks.has(scene.samples[next].key))next++;if(next>=scene.samples.length)break;changed=addStitch(scene.samples[next++])||changed;if(state.pending.length>=20)state.commit();}if(changed){updateProgress();scheduleSave();dirty=true;}if(scene.samples.length&&state.marks.size===scene.samples.length&&!doneShown){doneShown=true;pause();save();toast('绣好啦！这一整幅心意，都是你的。');}}
@@ -100,4 +104,7 @@ $('download').addEventListener('click',()=>{const a=document.createElement('a');
 $('open-gallery').addEventListener('click',()=>{pause();const list=$('gallery-items');list.replaceChildren();if(!gallery.length){list.innerHTML='<div class="gallery-empty">把绣好的图案和信，收藏在这里。</div>';}for(const item of [...gallery].reverse()){const b=document.createElement('button');b.className='gallery-item';const img=document.createElement('img');img.src=item.image;img.alt=item.name||registry.get(item.patternId)?.name||'我的绣作';const meta=document.createElement('span');meta.className='gallery-meta';meta.textContent=img.alt;b.append(img,meta);b.addEventListener('click',()=>{$('gallery-dialog').close();openExport(item);});list.append(b);}$('gallery-dialog').showModal();});
 $('open-help').addEventListener('click',()=>{pause();$('help-dialog').showModal();});$('nav-workbench').addEventListener('click',()=>canvas.focus());document.addEventListener('click',e=>{const b=e.target.closest('[data-close]');if(b)b.closest('dialog').close();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){pause();release();save();}});window.addEventListener('pagehide',save);
-rebuild();buildControls();setTool('layout');updateAudio();requestAnimationFrame(frame);
+buildControls();setTool('layout');updateAudio();$('auto-stitch').disabled=true;
+$('save-status').textContent='正在准备角色原图…';painter.draw({paths:[],samples:[],bounds:new Map()},new CompositionState(),{fabric});
+const imageJobs=patterns.filter(p=>p.image).map(async p=>{try{await geometry.prepareImage(p);}catch(error){p.unavailable=true;console.warn('角色素材加载失败：'+p.name,error.message);}});
+Promise.all(imageJobs).then(()=>{artworkReady=true;rebuild();buildControls();dirty=true;requestAnimationFrame(frame);});

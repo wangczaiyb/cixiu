@@ -1,6 +1,6 @@
-import { ipPatterns } from './ip-patterns.js';
-import { domesticPatterns } from './domestic-patterns.js';
-import { trendingPatterns } from './trending-patterns.js';
+import { ipPatterns } from './ip-patterns.js?v=20261018-art3';
+import { domesticPatterns } from './domestic-patterns.js?v=20261018-art3';
+import { trendingPatterns } from './trending-patterns.js?v=20261018-art3';
 const brown = '#a27a51', cream = '#c4a073', ink = '#6c5745', pink = '#cf9290', green = '#829575', gold = '#d7af59';
 const p = (d, color = brown) => ({ d, color });
 export const patterns = [

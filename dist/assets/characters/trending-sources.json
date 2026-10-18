@@ -1,0 +1,124 @@
+{
+  "retrievedAt": "2026-10-18",
+  "preservation": "Downloaded source artwork is stored unmodified. Chiikawa imageCrop values are runtime viewports taken from the official website's sprite CSS.",
+  "characters": [
+    {
+      "id": "labubu",
+      "name": "Labubu",
+      "file": "labubu.png",
+      "page": "https://www.popmart.com/at/ip/the-monsters/efc371ce-c7dc-4d71-a820-136113d96587",
+      "image": "https://prod-server-r2.popmart.com/uploads/aKPgp5qdzlgcjDtBEXR6O7m0f3hsRYNi/D-DZtJxjouQnzdyo-1779602742-8f9lwP7YQHoZONgp-1763368915-1723457780897_labubu%E5%AE%98%E7%BD%91ip%E5%B1%95%E7%A4%BA%E7%B4%A0%E4%BD%93.png",
+      "publisher": "POP MART",
+      "notes": "Official full-body transparent 3D character illustration, 1920x2704."
+    },
+    {
+      "id": "star-star",
+      "name": "星星人",
+      "file": "star-star.webp",
+      "page": "https://www.popmart.com/at/ip/twinkle-twinkle/411b022a-4d55-4bbc-8a07-f88ad54f740f",
+      "image": "https://prod-server-r2.popmart.com/uploads/BVpibjM982GYSP6wpdwjh4gLtGFs66Vy/OYna3NsTEDjczK_P-1767966337-1755585667354_%E9%A6%96%E9%A1%B5%E7%B4%A0%E6%9D%90%E5%9B%BE_twinkle-twinkle_123_%E6%98%9F%E6%98%9F%E4%BA%BA%E7%B3%BB%E5%88%97%E6%89%8B%E5%8A%9E.webp",
+      "publisher": "POP MART",
+      "notes": "Official full-body chef variant, 504x710."
+    },
+    {
+      "id": "chiikawa",
+      "name": "吉伊",
+      "file": "chiikawa-character-sheet.png",
+      "imageCrop": [
+        0,
+        0,
+        335,
+        362
+      ],
+      "page": "https://www.anime-chiikawa.jp/chara.html",
+      "image": "https://www.anime-chiikawa.jp/images/characters/img_charapage.png",
+      "layoutSource": "https://www.anime-chiikawa.jp/js/main.js",
+      "publisher": "Chiikawa anime official website / Nagano / Chiikawa committee",
+      "notes": "Official transparent sprite sheet, 3766x463."
+    },
+    {
+      "id": "hachiware",
+      "name": "小八",
+      "file": "chiikawa-character-sheet.png",
+      "imageCrop": [
+        343,
+        0,
+        335,
+        374
+      ],
+      "page": "https://www.anime-chiikawa.jp/chara.html",
+      "image": "https://www.anime-chiikawa.jp/images/characters/img_charapage.png",
+      "layoutSource": "https://www.anime-chiikawa.jp/js/main.js",
+      "publisher": "Chiikawa anime official website / Nagano / Chiikawa committee"
+    },
+    {
+      "id": "usagi",
+      "name": "乌萨奇",
+      "file": "chiikawa-character-sheet.png",
+      "imageCrop": [
+        690,
+        0,
+        335,
+        463
+      ],
+      "page": "https://www.anime-chiikawa.jp/chara.html",
+      "image": "https://www.anime-chiikawa.jp/images/characters/img_charapage.png",
+      "layoutSource": "https://www.anime-chiikawa.jp/js/main.js",
+      "publisher": "Chiikawa anime official website / Nagano / Chiikawa committee"
+    },
+    {
+      "id": "butterbear",
+      "name": "黄油小熊",
+      "file": "butterbear-stage.png",
+      "page": "https://butterbear.co.th/pages/about",
+      "image": "https://butterbear.co.th/cdn/shop/files/Copy_of_Butterbear_Tpop_Stage03_1.png?v=1731049451&width=1500",
+      "publisher": "Butterbear official store",
+      "notes": "Official full-body transparent illustration with rainbow skirt and red ribbons, 616x830."
+    },
+    {
+      "id": "pikachu",
+      "name": "皮卡丘",
+      "file": "pikachu.png",
+      "page": "https://zukan.pokemon.co.jp/detail/0025",
+      "image": "https://zukan.pokemon.co.jp/zukan-api/up/images/index/5bb0cfd44302cd4df0c0c88d37457931.png",
+      "publisher": "The Pokémon Company",
+      "notes": "Official Pokédex transparent full-body illustration, 570x570."
+    },
+    {
+      "id": "stitch",
+      "name": "史迪奇",
+      "file": "stitch-official-404.jpg",
+      "page": "https://disneyworld.disney.go.com/404/",
+      "image": "https://secure.cdn3.wdpromedia.com/media/pep/live/media/site/img/content/error/2311e7-stitch.jpg",
+      "publisher": "Walt Disney World",
+      "notes": "Official full-body 3D character artwork on a pure white background, 189x245. The original JPG is unmodified; runtime background removal avoids stitching a rectangular backdrop."
+    },
+    {
+      "id": "doraemon",
+      "name": "哆啦A梦",
+      "file": "doraemon.jpg",
+      "page": "https://www.tv-asahi.co.jp/doraemon/character/",
+      "image": "https://www.tv-asahi.co.jp/doraemon/character/img/doraemon.jpg",
+      "publisher": "TV Asahi / Doraemon official anime website",
+      "notes": "Official full-body illustration on a white background, 320x380."
+    },
+    {
+      "id": "shin-chan",
+      "name": "蜡笔小新",
+      "file": "shinchan.png",
+      "page": "https://www.tv-asahi.co.jp/shinchan/character/",
+      "image": "https://www.tv-asahi.co.jp/shinchan/character/img/01.png",
+      "publisher": "TV Asahi / Crayon Shin-chan official anime website",
+      "notes": "Official transparent full-body illustration, 340x420."
+    },
+    {
+      "id": "rilakkuma",
+      "name": "轻松熊",
+      "file": "rilakkuma.webp",
+      "page": "https://www.san-x.co.jp/ja/characters/rilakkuma/",
+      "image": "https://www.san-x.co.jp/uploads/1769160901929-s5ca3w4hrqb/1.webp",
+      "publisher": "San-X",
+      "notes": "Official full-body character illustration on a white background, 200x200."
+    }
+  ]
+}

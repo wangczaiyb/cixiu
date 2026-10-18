@@ -1,0 +1,110 @@
+{
+  "hello-kitty": {
+    "source": "https://www.sanrio.co.jp/wp-content/uploads/2022/06/list-hellokitty.png",
+    "reference_page": "https://www.sanrio.co.jp/characters/hellokitty/",
+    "unmodified": true,
+    "character_name": "Hello Kitty",
+    "verification": {
+      "checked_at": "2026-10-18T02:09:26.273Z",
+      "width": 560,
+      "height": 560,
+      "format": "PNG RGBA8",
+      "bytes": 74867,
+      "sha256": "a8a2211f9967bce23a2b696be7a7b3065a062082e6efa74ab917e3d4906a071d",
+      "decoded": true,
+      "visual_character_match": true,
+      "official_page_contains_source": true,
+      "byte_for_byte_source_match": true
+    }
+  },
+  "kuromi": {
+    "source": "https://www.sanrio.co.jp/wp-content/uploads/2022/06/list-kuromi.png",
+    "reference_page": "https://www.sanrio.co.jp/characters/kuromi/",
+    "unmodified": true,
+    "character_name": "Kuromi",
+    "verification": {
+      "checked_at": "2026-10-18T02:09:26.273Z",
+      "width": 560,
+      "height": 560,
+      "format": "PNG RGBA8",
+      "bytes": 48500,
+      "sha256": "3dc52aac57897374436c3394c434de26090482a8c11e6bdf4bd7f3dce581d4d0",
+      "decoded": true,
+      "visual_character_match": true,
+      "official_page_contains_source": true,
+      "byte_for_byte_source_match": true
+    }
+  },
+  "cinnamoroll": {
+    "source": "https://www.sanrio.co.jp/wp-content/uploads/2022/06/list-cinnamon.png",
+    "reference_page": "https://www.sanrio.co.jp/characters/cinnamon/",
+    "unmodified": true,
+    "character_name": "Cinnamoroll",
+    "verification": {
+      "checked_at": "2026-10-18T02:09:26.273Z",
+      "width": 560,
+      "height": 560,
+      "format": "PNG RGBA8",
+      "bytes": 27701,
+      "sha256": "82de5dabe8b8898d80191d9fcb493aa6ca6414f610487562228a8a391ea5a8f6",
+      "decoded": true,
+      "visual_character_match": true,
+      "official_page_contains_source": true,
+      "byte_for_byte_source_match": true
+    }
+  },
+  "my-melody": {
+    "source": "https://www.sanrio.co.jp/wp-content/uploads/2022/06/list-mymelody.png",
+    "reference_page": "https://www.sanrio.co.jp/characters/mymelody/",
+    "unmodified": true,
+    "character_name": "My Melody",
+    "verification": {
+      "checked_at": "2026-10-18T02:09:26.273Z",
+      "width": 560,
+      "height": 560,
+      "format": "PNG RGBA8",
+      "bytes": 43200,
+      "sha256": "6c53bd64e8f601c0709c69daee863f282eaa763affa2f4f96ce77b5aa2b0b41c",
+      "decoded": true,
+      "visual_character_match": true,
+      "official_page_contains_source": true,
+      "byte_for_byte_source_match": true
+    }
+  },
+  "pompompurin": {
+    "source": "https://www.sanrio.co.jp/wp-content/uploads/2022/06/list-pompompurin.png",
+    "reference_page": "https://www.sanrio.co.jp/characters/pompompurin/",
+    "unmodified": true,
+    "character_name": "Pompompurin",
+    "verification": {
+      "checked_at": "2026-10-18T02:09:26.273Z",
+      "width": 560,
+      "height": 560,
+      "format": "PNG RGBA8",
+      "bytes": 34800,
+      "sha256": "88c5a9f17886159de250607cb9cb5ca7dcee436dfb2789c3f0a19e434c7b7de1",
+      "decoded": true,
+      "visual_character_match": true,
+      "official_page_contains_source": true,
+      "byte_for_byte_source_match": true
+    }
+  },
+  "pochacco": {
+    "source": "https://www.sanrio.co.jp/wp-content/uploads/2022/06/list-pochacco.png",
+    "reference_page": "https://www.sanrio.co.jp/characters/pochacco/",
+    "unmodified": true,
+    "character_name": "Pochacco",
+    "verification": {
+      "checked_at": "2026-10-18T02:09:26.273Z",
+      "width": 560,
+      "height": 560,
+      "format": "PNG RGBA8",
+      "bytes": 44802,
+      "sha256": "125f73b88ca330dd1bf95f14738c01a2ddf3e6a9650a2e18eafbf7ea4220de3d",
+      "decoded": true,
+      "visual_character_match": true,
+      "official_page_contains_source": true,
+      "byte_for_byte_source_match": true
+    }
+  }
+}
