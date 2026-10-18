@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: cixiu
+    runtime: static
+    buildCommand: npm run check
+    staticPublishPath: ./dist
+    autoDeploy: true
