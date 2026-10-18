@@ -7,15 +7,15 @@ import {attachCanvasInput,canvasPoint,canvasRadius} from './canvas-input.js?v=20
 import {installDialogFallback} from './browser-support.js?v=20261018-mobile1';
 const $=id=>document.getElementById(id),icon=id=>`<svg aria-hidden="true"><use href="#i-${id}"/></svg>`;
 const canvas=$('embroidery'),geometry=new Geometry(),painter=new Painter(canvas),registry=new Map(patterns.map(p=>[p.id,p]));
-for(const id of ['custom-text','letter-body','letter-sign']){const el=$(id);if(el)el.value=el.value.replace(/\\n/g,'\n');}
+for(const id of ['typewriter-input','custom-text','letter-body','letter-sign']){const el=$(id);if(el)el.value='';}
 const KEY='little-stitch-composition-v3',GALLERY='little-stitch-gallery-v1';
 function read(key,fallback){try{return JSON.parse(localStorage.getItem(key))||fallback;}catch{return fallback;}}
 function write(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch{toast('浏览器存储空间不足，请下载图片留存');return false;}}
 const saved=read(KEY,{});
-const ART_REVISION=3;
+const ART_REVISION=4;
 for(const p of (saved.customPatterns||[]).slice(0,20))if(typeof p.id==='string'&&p.id.startsWith('text-')&&Array.isArray(p.paths)&&p.paths.length<4000&&p.paths.every(s=>typeof s.d==='string'&&s.d.length<15000&&/^#[0-9a-f]{6}$/i.test(s.color)))registry.set(p.id,p);
-let layers=Array.isArray(saved.layers)?saved.layers.filter(l=>registry.has(l.patternId)&&Number.isFinite(l.x)&&Number.isFinite(l.y)&&Number.isFinite(l.scale)&&l.scale>=.15&&l.scale<=3&&typeof l.id==='string'&&(!l.patternId.startsWith('text-')||l.id==='typewriter-layer')).slice(0,20):defaultLayers(['hello-kitty','kuromi','cinnamoroll','my-melody','rilakkuma']);
-const retainedMarks=Array.isArray(saved.marks)?saved.marks:[];
+let layers=Array.isArray(saved.layers)&&saved.artRevision===ART_REVISION?saved.layers.filter(l=>registry.has(l.patternId)&&Number.isFinite(l.x)&&Number.isFinite(l.y)&&Number.isFinite(l.scale)&&l.scale>=.15&&l.scale<=3&&typeof l.id==='string'&&(!l.patternId.startsWith('text-')||l.id==='typewriter-layer')).slice(0,20):[];
+const retainedMarks=Array.isArray(saved.marks)&&saved.artRevision===ART_REVISION?saved.marks:[];
 const revisedLayers=new Set(saved.artRevision===ART_REVISION?[]:layers.filter(l=>!registry.get(l.patternId)?.customText).map(l=>l.id));
 let state=new CompositionState(retainedMarks.filter(m=>![...revisedLayers].some(id=>m.key?.startsWith(id+':')))),scene,selected=layers[0]?.id||null;
 let fabric=fabrics.some(f=>f.color===saved.fabric)?saved.fabric:fabrics[0].color,group='popular',tool='sew',style='stem',chosenColor=null,zoom=1,guides=true;
@@ -423,18 +423,13 @@ const initialJobs=patterns.filter(p=>p.image&&activePatternIds.has(p.id)).map(as
 });
 Promise.all(initialJobs).then(()=>{
   artworkReady=true;rebuild();buildControls();buildQuickStickers();dirty=true;requestAnimationFrame(frame);
-  const defaultLetter='好累，明明很好\n的对待了所有人！';
   if(!layers.length||(layers.length===5&&layers.every(l=>typeof l.id==='string'&&l.id.startsWith('initial-')))){
     state=new CompositionState();
     layers=[];
-    // Add cat on top-left and persimmon on right to match user's reference exactly
-    const catPattern=registry.get('cute-red-cat');
-    if(catPattern)layers.push({id:'sticker-cat',patternId:'cute-red-cat',x:55,y:45,scale:.46,rotation:0});
-    const persimmonPattern=registry.get('green-persimmon');
-    if(persimmonPattern)layers.push({id:'sticker-persimmon',patternId:'green-persimmon',x:550,y:150,scale:.48,rotation:0});
-    if(twInput)twInput.value=defaultLetter;
-    if(customText)customText.value=defaultLetter;
-    syncTypewriterText(defaultLetter);
+    if(twInput)twInput.value='';
+    if(customText)customText.value='';
+    if($('text-count'))$('text-count').textContent='0/120';
+    rebuild();
   }
   (async()=>{
     const remaining=patterns.filter(p=>p.image&&!activePatternIds.has(p.id));
